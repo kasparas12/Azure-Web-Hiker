@@ -39,7 +39,6 @@ namespace Azure.Web.Hiker.CrawlingEngine
                 cl => new ServiceBusMessageReceiverHandler(cl), Context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString);
 
             yield return new ServiceInstanceListener(context => listener);
-
         }
     }
 }
