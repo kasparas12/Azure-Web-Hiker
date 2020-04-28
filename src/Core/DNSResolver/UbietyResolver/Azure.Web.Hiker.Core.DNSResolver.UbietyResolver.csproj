@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>Azure.Web.Hiker.Core.DNSResolver.UbietyResolver</AssemblyName>
+    <RootNamespace>Azure.Web.Hiker.Core.DNSResolver.UbietyResolver</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ubiety.Dns.Core" Version="4.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DnsResolver\Azure.Web.Hiker.Core.DNSResolver.csproj" />
+  </ItemGroup>
+
+</Project>
