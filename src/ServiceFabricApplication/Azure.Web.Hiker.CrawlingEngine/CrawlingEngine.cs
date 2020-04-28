@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Fabric;
-using System.Threading;
-using System.Threading.Tasks;
 
-using Microsoft.Azure.ServiceBus;
+using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine;
+
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 
-using ServiceFabric.ServiceBus.Services.Netstd;
 using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
 
 namespace Azure.Web.Hiker.CrawlingEngine
@@ -28,7 +25,6 @@ namespace Azure.Web.Hiker.CrawlingEngine
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-
             // In the configuration file, define connection strings: 
             // "Microsoft.ServiceBus.ConnectionString.Receive"
             // and "Microsoft.ServiceBus.ConnectionString.Send"
@@ -40,20 +36,10 @@ namespace Azure.Web.Hiker.CrawlingEngine
             string serviceBusReceiveConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusReceiveConnectionString"].Value;
 
             var listener = new ServiceBusQueueCommunicationListener(
-                cl => new ServiceBusReceiverHandler(cl), Context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString);
+                cl => new ServiceBusMessageReceiverHandler(cl), Context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString);
 
             yield return new ServiceInstanceListener(context => listener);
 
-        }
-    }
-
-    public class ServiceBusReceiverHandler : DefaultServiceBusMessageReceiver
-    {
-        public ServiceBusReceiverHandler(IServiceBusCommunicationListener communicationListener) : base(communicationListener) { }
-
-        protected override async Task ReceiveMessageImplAsync(Message message, CancellationToken cancellationToken)
-        {
-            await Console.Out.WriteLineAsync("MESSAGAS:" + message.Body);
         }
     }
 }
