@@ -8,27 +8,30 @@ trigger:
 
 variables:
   buildConfiguration: 'Release'
-
+  BuildPlatform: 'x64'
 jobs:
-- job: LinuxBuild
-  displayName: 'Build for Linux'
+- job: WindowsBuild
+  displayName: 'Build for Windows'
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'windows-latest'
   steps:
-  - task: DotNetCoreCLI@2
+  - task: VSBuild@1
+    displayName: 'Build solution **\*.sln'
     inputs:
-      command: 'build'
-      projects: '**/*.sln'
-      arguments: '--configuration $(buildConfiguration)'
-
-  - task: MSBuild@1
-    displayName: 'Build .sfproj files'
-    inputs:
-      solution: '**/*.sfproj'
-      msbuildArchitecture: 'x64'
+      solution: '$(Parameters.solution)'
+      msbuildArgs: '/p:Deterministic=true /p:PathMap=$(Agent.BuildDirectory)=C:\'
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
-      msbuildArguments: '/t:Package /p:PackageLocation=$(build.artifactstagingdirectory)\applicationpackage'
+
+
+  - task: VSBuild@1
+    displayName: 'Build solution **\*.sfproj'
+    inputs:
+      solution: '$(Parameters.serviceFabricProject)'
+      msbuildArgs: '/t:Package /p:PackageLocation=$(build.artifactstagingdirectory)\applicationpackage'
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
+
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(build.artifactstagingdirectory)\pdbs'
@@ -42,3 +45,28 @@ jobs:
     inputs:
       SourceFolder: '$(build.artifactstagingdirectory)\applicationpackage'
       Contents: '**\*.pdb'
+
+  - task: ServiceFabricUpdateManifests@2
+    displayName: 'Update Service Fabric Manifests (Manifest versions)'
+    inputs:
+      applicationPackagePath: '$(build.artifactstagingdirectory)\applicationpackage'
+      versionSuffix: '.$(build.buildnumber)'
+      updateOnlyChanged: true
+      pkgArtifactName: drop
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(build.artifactstagingdirectory)\projectartifacts'
+    inputs:
+      SourceFolder: '$(system.defaultworkingdirectory)'
+      Contents: |
+      **\PublishProfiles\*.xml
+      **\ApplicationParameters\*.xml
+      TargetFolder: '$(build.artifactstagingdirectory)\projectartifacts'
+    condition: succeededOrFailed()
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+    inputs:
+      PathtoPublish: '$(build.artifactstagingdirectory)'
+    condition: succeededOrFailed()
+
