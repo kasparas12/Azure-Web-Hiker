@@ -26,6 +26,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{83EF85F7-7061-47AD-8B47-688A1DA0EE16}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -44,9 +45,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Persistence
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{5756510D-B37C-4C98-9880-1DE76E1D8B62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Core.Services", "src\Core\Services\Azure.Web.Hiker.Core.Services\Azure.Web.Hiker.Core.Services.csproj", "{1308C12F-ACF5-4C61-9BC9-1DA2ABA4C5E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Core.Services", "src\Core\Services\Azure.Web.Hiker.Core.Services\Azure.Web.Hiker.Core.Services.csproj", "{1308C12F-ACF5-4C61-9BC9-1DA2ABA4C5E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent", "src\ServiceFabricApplication\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.csproj", "{BC8935C5-F506-449F-9EEC-99CC4D31CD65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent", "src\ServiceFabricApplication\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.csproj", "{BC8935C5-F506-449F-9EEC-99CC4D31CD65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
