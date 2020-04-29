@@ -6,12 +6,37 @@
 trigger:
 - dev
 
-pool:
-  vmImage: 'ubuntu-latest'
+variables:
+  buildConfiguration: 'Release'
 
-steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.sln'
-    arguments: '--configuration Release'
+jobs:
+- job: LinuxBuild
+  displayName: 'Build for Linux'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '**/*.sln'
+      arguments: '--configuration $(buildConfiguration)'
+
+  - task: VSBuild@1
+    displayName: 'Build solution **\*.sfproj'
+    inputs:
+      solution: '$(Parameters.serviceFabricProject)'
+      msbuildArgs: '/t:Package /p:PackageLocation=$(build.artifactstagingdirectory)\applicationpackage'
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(build.artifactstagingdirectory)\pdbs'
+    inputs:
+      SourceFolder: '$(build.artifactstagingdirectory)\applicationpackage'
+      Contents: '**\*.pdb'
+      TargetFolder: '$(build.artifactstagingdirectory)\pdbs'
+
+  - task: DeleteFiles@1
+    displayName: 'Delete files from $(build.artifactstagingdirectory)\applicationpackage'
+    inputs:
+      SourceFolder: '$(build.artifactstagingdirectory)\applicationpackage'
+      Contents: '**\*.pdb'
