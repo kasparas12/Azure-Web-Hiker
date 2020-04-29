@@ -21,13 +21,15 @@ jobs:
       projects: '**/*.sln'
       arguments: '--configuration $(buildConfiguration)'
 
-  - task: VSBuild@1
-    displayName: 'Build solution **\*.sfproj'
+  - task: MSBuild@1
+    displayName: 'Build .sfproj files'
     inputs:
-      solution: '$(Parameters.serviceFabricProject)'
-      msbuildArgs: '/t:Package /p:PackageLocation=$(build.artifactstagingdirectory)\applicationpackage'
+      solution: '**/*.sfproj'
+      msbuildArchitecture: 'x64'
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
+      msbuildArguments: '/t:Package /p:PackageLocation=$(build.artifactstagingdirectory)\applicationpackage'
+
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(build.artifactstagingdirectory)\pdbs'
     inputs:
