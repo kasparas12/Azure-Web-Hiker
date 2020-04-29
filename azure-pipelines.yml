@@ -59,8 +59,8 @@ jobs:
     inputs:
       SourceFolder: '$(system.defaultworkingdirectory)'
       Contents: |
-      **\PublishProfiles\*.xml
-      **\ApplicationParameters\*.xml
+        **\PublishProfiles\*.xml
+        **\ApplicationParameters\*.xml
       TargetFolder: '$(build.artifactstagingdirectory)\projectartifacts'
     condition: succeededOrFailed()
 
