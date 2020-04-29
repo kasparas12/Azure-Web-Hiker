@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Azure.Web.Hiker.Core.DNSResolver.UbietyResolver</AssemblyName>
     <RootNamespace>Azure.Web.Hiker.Core.DNSResolver.UbietyResolver</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

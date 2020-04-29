@@ -9,6 +9,7 @@
     <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
     <AssemblyName>CrawlingEngine</AssemblyName>
     <RootNamespace>Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
