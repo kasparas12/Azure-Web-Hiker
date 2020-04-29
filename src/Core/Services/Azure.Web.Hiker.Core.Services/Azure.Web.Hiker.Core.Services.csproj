@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Models\Azure.Web.Hiker.Core.Models\Azure.Web.Hiker.Core.Models.csproj" />
+    <ProjectReference Include="..\..\Persistence\Azure.Web.Hiker.Core.Persistence\Azure.Web.Hiker.Core.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

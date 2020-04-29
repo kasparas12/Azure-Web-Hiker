@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.Tracing;
 using System.Fabric;
 
-namespace Azure.Web.Hiker.CrawlingEngine
+namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
 {
     [EventSource(Name = "MyCompany-Azure.Web.Hiker.ServiceFabricApplication-Stateless1")]
     internal sealed class ServiceEventSource : EventSource

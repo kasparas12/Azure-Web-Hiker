@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/Azure.Web.Hiker.ServiceFabricApplication" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent_InstanceCount" Value="1" />
+    <Parameter Name="Stateless1_InstanceCount" Value="1" />
+    <Parameter Name="WebCrawlerURLListeningQueue" Value="web-crawler-url-listen-queue-dev" />
+    <Parameter Name="ServiceBusSendConnectionString" Value="Endpoint=sb://azure-web-hiker-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yRoInKeElg3het9kanWfsNWxFTR8n/w+kStleAV//w8=" />
+    <Parameter Name="ServiceBusReceiveConnectionString" Value="Endpoint=sb://azure-web-hiker-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yRoInKeElg3het9kanWfsNWxFTR8n/w+kStleAV//w8=" />
+    <Parameter Name="AgentRegistrarDatabaseConnectionString" Value="Data Source=192.168.99.100;Initial Catalog=web_crawler_db;Persist Security Info=True;User ID=sa;Password=Kasparas11!@" />
+  </Parameters>
+</Application>
