@@ -9,6 +9,8 @@ trigger:
 variables:
   buildConfiguration: 'Release'
   BuildPlatform: 'x64'
+  Parameters.solution: '**\*.sln'
+  Parameters.serviceFabricProject: '**\*.sfproj'
   
 jobs:
 - job: WindowsBuild
