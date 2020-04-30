@@ -3,6 +3,4 @@ Distributed Cloud-Based Web Crawler Implementation designed for scalability and 
 
 ## CI/CD metrics
 
-| Branch | Code Quality                                                                                                                                                                           | Azure DevOps Build | Test Coverage |
-|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|---------------|
-| dev    | [![CodeFactor](https://www.codefactor.io/repository/github/kasparas12/azure-web-hiker/badge/dev)](https://www.codefactor.io/repository/github/kasparas12/azure-web-hiker/overview/dev) |                    |               |
+[![codecov](https://codecov.io/gh/kasparas12/Azure-Web-Hiker/branch/dev/graph/badge.svg)](https://codecov.io/gh/kasparas12/Azure-Web-Hiker)
