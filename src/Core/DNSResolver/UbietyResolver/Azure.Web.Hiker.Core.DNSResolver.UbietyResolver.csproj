@@ -5,6 +5,7 @@
     <AssemblyName>Azure.Web.Hiker.Core.DNSResolver.UbietyResolver</AssemblyName>
     <RootNamespace>Azure.Web.Hiker.Core.DNSResolver.UbietyResolver</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

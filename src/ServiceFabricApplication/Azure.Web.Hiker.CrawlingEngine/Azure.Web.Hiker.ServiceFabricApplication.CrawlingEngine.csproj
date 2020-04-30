@@ -10,6 +10,7 @@
     <AssemblyName>CrawlingEngine</AssemblyName>
     <RootNamespace>Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
