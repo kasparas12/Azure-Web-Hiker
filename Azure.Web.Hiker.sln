@@ -55,6 +55,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CrawlingAgent", "CrawlingAg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Core.CrawlingAgent", "src\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj", "{89C7B4D7-9283-49FE-A388-52014F4F6736}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{ECAB5AD4-2FEF-4AD7-AACB-409BD2D29DD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Infrastructure.ServiceBusClient", "src\Infrastructure\AzureServiceBusCommunication\Azure.Web.Hiker.Infrastructure.ServiceBusClient\Azure.Web.Hiker.Infrastructure.ServiceBusClient.csproj", "{D0E3FD7A-5F82-4376-88D0-A20D512D089F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,8 +125,8 @@ Global
 		{CF76DB3C-9A58-4CBA-910A-7BF53B9715DB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CF76DB3C-9A58-4CBA-910A-7BF53B9715DB}.Release|x64.ActiveCfg = Release|Any CPU
 		{CF76DB3C-9A58-4CBA-910A-7BF53B9715DB}.Release|x64.Build.0 = Release|Any CPU
-		{13C1706D-2EDB-45E5-8D80-80BBA13258CF}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{13C1706D-2EDB-45E5-8D80-80BBA13258CF}.Debug|Any CPU.Build.0 = Debug|x64
+		{13C1706D-2EDB-45E5-8D80-80BBA13258CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13C1706D-2EDB-45E5-8D80-80BBA13258CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13C1706D-2EDB-45E5-8D80-80BBA13258CF}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{13C1706D-2EDB-45E5-8D80-80BBA13258CF}.Debug|x64.Build.0 = Debug|Any CPU
 		{13C1706D-2EDB-45E5-8D80-80BBA13258CF}.Release|Any CPU.ActiveCfg = Release|x64
@@ -153,6 +157,14 @@ Global
 		{89C7B4D7-9283-49FE-A388-52014F4F6736}.Release|Any CPU.Build.0 = Release|Any CPU
 		{89C7B4D7-9283-49FE-A388-52014F4F6736}.Release|x64.ActiveCfg = Release|Any CPU
 		{89C7B4D7-9283-49FE-A388-52014F4F6736}.Release|x64.Build.0 = Release|Any CPU
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F}.Debug|x64.ActiveCfg = Debug|x64
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F}.Debug|x64.Build.0 = Debug|x64
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F}.Release|x64.ActiveCfg = Release|Any CPU
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -178,6 +190,8 @@ Global
 		{CADABAA3-1D7C-4B53-818E-D98D3ECB46B7} = {752313EC-41CA-4C58-8960-F792059A5391}
 		{E5499A1B-83A8-46C0-B8BF-0D7F72BD89B3} = {D38B0B25-F916-4A4C-918E-F1834D759E3A}
 		{89C7B4D7-9283-49FE-A388-52014F4F6736} = {E5499A1B-83A8-46C0-B8BF-0D7F72BD89B3}
+		{ECAB5AD4-2FEF-4AD7-AACB-409BD2D29DD6} = {EEE603DF-657B-44C3-8699-7331E4310172}
+		{D0E3FD7A-5F82-4376-88D0-A20D512D089F} = {ECAB5AD4-2FEF-4AD7-AACB-409BD2D29DD6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3641BBA2-8F8A-45CC-A2AC-B065ECDE4503}

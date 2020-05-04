@@ -2,8 +2,9 @@
 
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
-using Azure.Web.Hiker.Core.CrawlingEngine;
+using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.CrawlingEngine.Services;
+using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 using Azure.Web.Hiker.PersistenceProviders.Dapper;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
 
@@ -44,17 +45,18 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
             container.Register<IAgentRegistrarService, AgentRegistrarService>();
             container.Register<FabricClient>(() => new FabricClient(), Lifestyle.Singleton);
             container.Register<IAgentController, FabricAgentController>();
+            container.Register<IServiceBusSettings, ServiceBusSettings>();
+            container.Register<IWebCrawlerQueueClient, ServiceBusQueueClient>();
         }
 
         private static void ConfigureServiceBusListener(StatelessServiceContext context, SimpleInjector.Container container)
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             string serviceBusQueueName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["CreateAgentQueue"].Value;
-            string serviceBusSendConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusSendConnectionString"].Value;
-            string serviceBusReceiveConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusReceiveConnectionString"].Value;
+            string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
 
             container.Register<ServiceBusQueueCommunicationListener>(() => new ServiceBusQueueCommunicationListener(
-                cl => new ServiceBusMessageReceiverHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<IAgentController>(), container.GetInstance<IAgentProcessingQueueCreator>()), context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString), Lifestyle.Singleton);
+                cl => new ServiceBusMessageReceiverHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<IAgentController>(), container.GetInstance<IAgentProcessingQueueCreator>(), container.GetInstance<IWebCrawlerQueueClient>()), context, serviceBusQueueName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
         }
 
         private static void ConfigureAgentProcessingQueueCreator(SimpleInjector.Container container, StatelessServiceContext context)

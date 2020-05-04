@@ -4,7 +4,7 @@ using Microsoft.Azure.ServiceBus;
 
 using Newtonsoft.Json;
 
-namespace Azure.Web.Hiker.Core.CrawlingEngine.Extensions
+namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient.Extensions
 {
     public static class MessagesExtensions
     {

@@ -4,8 +4,8 @@
   <Section Name="ServiceBusConfigSection">
     
     <Parameter Name="CreateAgentQueue" Value="" />
-    <Parameter Name="ServiceBusSendConnectionString" Value="" />
-    <Parameter Name="ServiceBusReceiveConnectionString" Value="" />
+    <Parameter Name="CrawlingFrontQueueName" Value=""/>
+    <Parameter Name="ServiceBusConnectionString" Value="" />
 
     <Parameter Name="TenantId" Value="" />
     <Parameter Name="ClientId" Value="" />

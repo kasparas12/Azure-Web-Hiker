@@ -1,10 +1,12 @@
 ﻿using System;
 
+using Azure.Web.Hiker.Core.Common.QueueClient;
+
 using Newtonsoft.Json;
 
 namespace Azure.Web.Hiker.Core.CrawlingEngine.Messages
 {
-    public class CreateNewAgentMessage
+    public class CreateNewAgentMessage : IBaseMessage
     {
         public CreateNewAgentMessage()
         {

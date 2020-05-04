@@ -4,13 +4,13 @@
     <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Stateless1_InstanceCount" DefaultValue="-1" />
     <Parameter Name="CrawlingEngine_InstanceCount" DefaultValue="-1" />
-    <Parameter Name="ServiceBusSendConnectionString" DefaultValue="" />
-    <Parameter Name="ServiceBusReceiveConnectionString" DefaultValue="" />
+    <Parameter Name="ServiceBusConnectionString" DefaultValue="" />
     <Parameter Name="AgentRegistrarDatabaseConnectionString" DefaultValue="" />
     <Parameter Name="DnsServerIpAddress" DefaultValue="" />
     <Parameter Name="DnsRequestsRetryCount" DefaultValue="" />
     <Parameter Name="DnsRequestTimeoutValue" DefaultValue="" />
     <Parameter Name="CreateAgentQueue" DefaultValue="" />
+    <Parameter Name="CrawlingFrontQueueName" DefaultValue="" />
     <Parameter Name="TenantId" DefaultValue="" />
     <Parameter Name="ClientId" DefaultValue="" />
     <Parameter Name="ClientSecret" DefaultValue="" />
@@ -42,8 +42,8 @@
         <Settings>
           <Section Name="ServiceBusConfigSection">
             <Parameter Name="CreateAgentQueue" Value="[CreateAgentQueue]" />
-            <Parameter Name="ServiceBusSendConnectionString" Value="[ServiceBusSendConnectionString]" />
-            <Parameter Name="ServiceBusReceiveConnectionString" Value="[ServiceBusReceiveConnectionString]" />
+            <Parameter Name="CrawlingFrontQueueName" Value="[CrawlingFrontQueueName]" />
+            <Parameter Name="ServiceBusConnectionString" Value="[ServiceBusConnectionString]" />
             <Parameter Name="TenantId" Value="[TenantId]" />
             <Parameter Name="ClientId" Value="[ClientId]" />
             <Parameter Name="ClientSecret" Value="[ClientSecret]" />
