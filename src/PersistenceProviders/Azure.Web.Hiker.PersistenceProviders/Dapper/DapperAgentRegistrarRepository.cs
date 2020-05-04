@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Data.SqlClient;
 
-using Azure.Web.Hiker.Core.Models;
-using Azure.Web.Hiker.Core.Models.Interfaces;
-using Azure.Web.Hiker.Core.Persistence.Interfaces;
+using Azure.Web.Hiker.Core.AgentRegistrar.Models;
+using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 
 using Dapper;
 

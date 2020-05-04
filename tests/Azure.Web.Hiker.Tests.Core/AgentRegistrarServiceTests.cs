@@ -1,5 +1,5 @@
-using Azure.Web.Hiker.Core.Persistence.Interfaces;
-using Azure.Web.Hiker.Core.Services.AgentRegistrar;
+using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
+using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

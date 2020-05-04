@@ -3,9 +3,18 @@
   <Parameters>
     <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent_InstanceCount" Value="1" />
     <Parameter Name="Stateless1_InstanceCount" Value="1" />
-    <Parameter Name="WebCrawlerURLListeningQueue" Value="web-crawler-url-listen-queue-dev" />
-    <Parameter Name="ServiceBusSendConnectionString" Value="Endpoint=sb://azure-web-hiker-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yRoInKeElg3het9kanWfsNWxFTR8n/w+kStleAV//w8=" />
-    <Parameter Name="ServiceBusReceiveConnectionString" Value="Endpoint=sb://azure-web-hiker-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yRoInKeElg3het9kanWfsNWxFTR8n/w+kStleAV//w8=" />
-    <Parameter Name="AgentRegistrarDatabaseConnectionString" Value="Data Source=192.168.99.100;Initial Catalog=web_crawler_db;Persist Security Info=True;User ID=sa;Password=Kasparas11!@" />
+    <Parameter Name="ServiceBusSendConnectionString" Value="" />
+    <Parameter Name="ServiceBusReceiveConnectionString" Value="" />
+    <Parameter Name="AgentRegistrarDatabaseConnectionString" Value="" />
+    <Parameter Name="DnsServerIpAddress" Value="" />
+    <Parameter Name="DnsRequestsRetryCount" Value="3" />
+    <Parameter Name="DnsRequestTimeoutValue" Value="1000" />
+    <Parameter Name="CreateAgentQueue" Value="create-agent-queue" />
+    <Parameter Name="TenantId" Value="" />
+    <Parameter Name="ClientId" Value="" />
+    <Parameter Name="ClientSecret" Value="" />
+    <Parameter Name="NamespaceName" Value="" />
+    <Parameter Name="ResourceGroupName" Value="" />
+    <Parameter Name="SubscriptionId" Value="" />
   </Parameters>
 </Application>

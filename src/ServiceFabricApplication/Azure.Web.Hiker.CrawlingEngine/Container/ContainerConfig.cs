@@ -1,8 +1,9 @@
 ﻿using System.Fabric;
 
-using Azure.Web.Hiker.Core.Persistence.Interfaces;
-using Azure.Web.Hiker.Core.Services.AgentController;
-using Azure.Web.Hiker.Core.Services.AgentRegistrar;
+using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
+using Azure.Web.Hiker.Core.AgentRegistrar.Services;
+using Azure.Web.Hiker.Core.CrawlingEngine;
+using Azure.Web.Hiker.Core.CrawlingEngine.Services;
 using Azure.Web.Hiker.PersistenceProviders.Dapper;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
 
@@ -25,6 +26,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
 
             ConfigureRepositories(container, context);
             ConfigureCoreServices(container);
+            ConfigureAgentProcessingQueueCreator(container, context);
             ConfigureServiceBusListener(context, container);
 
             return container;
@@ -43,15 +45,31 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
             container.Register<FabricClient>(() => new FabricClient(), Lifestyle.Singleton);
             container.Register<IAgentController, FabricAgentController>();
         }
+
         private static void ConfigureServiceBusListener(StatelessServiceContext context, SimpleInjector.Container container)
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
-            string serviceBusQueueName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["WebCrawlerURLListeningQueue"].Value;
+            string serviceBusQueueName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["CreateAgentQueue"].Value;
             string serviceBusSendConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusSendConnectionString"].Value;
             string serviceBusReceiveConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusReceiveConnectionString"].Value;
 
             container.Register<ServiceBusQueueCommunicationListener>(() => new ServiceBusQueueCommunicationListener(
-                cl => new ServiceBusMessageReceiverHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<IAgentController>()), context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString), Lifestyle.Singleton);
+                cl => new ServiceBusMessageReceiverHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<IAgentController>(), container.GetInstance<IAgentProcessingQueueCreator>()), context, serviceBusQueueName, serviceBusSendConnectionString, serviceBusReceiveConnectionString), Lifestyle.Singleton);
+        }
+
+        private static void ConfigureAgentProcessingQueueCreator(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+
+            string tenantId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["TenantId"].Value;
+            string clientId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ClientId"].Value;
+            string clientSecret = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ClientSecret"].Value;
+            string namespaceName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["NamespaceName"].Value;
+            string subscriptionId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["SubscriptionId"].Value;
+            string resourceGroupName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ResourceGroupName"].Value;
+
+            var serviceBusCredentials = new ServiceBusCredentials(tenantId, clientId, clientSecret, namespaceName, subscriptionId, resourceGroupName);
+            container.Register<IAgentProcessingQueueCreator>(() => new ServiceBusAgentProcessingQueueCreator(serviceBusCredentials));
         }
     }
 }

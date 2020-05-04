@@ -2,7 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Fabric;
 using System.Threading;
-using System.Threading.Tasks;
+
+using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container;
+
 using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
@@ -12,6 +14,9 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
         /// <summary>
         /// This is the entry point of the service host process.
         /// </summary>
+        /// 
+        public static SimpleInjector.Container ApplicationContainer { get; set; }
+
         private static void Main()
         {
             try
@@ -22,7 +27,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
                 // an instance of the class is created in this host process.
 
                 ServiceRuntime.RegisterServiceAsync("Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgentType",
-                    context => new CrawlingAgent(context)).GetAwaiter().GetResult();
+                    context => CreateService(context)).GetAwaiter().GetResult();
 
                 ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(CrawlingAgent).Name);
 
@@ -34,6 +39,13 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
                 throw;
             }
+        }
+
+        private static StatelessService CreateService(StatelessServiceContext context)
+        {
+            var container = ContainerConfig.CreateContainer(context);
+            ApplicationContainer = container;
+            return container.GetInstance<CrawlingAgent>();
         }
     }
 }

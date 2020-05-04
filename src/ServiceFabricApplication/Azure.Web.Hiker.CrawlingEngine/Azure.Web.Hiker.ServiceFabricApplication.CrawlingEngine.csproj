@@ -31,9 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Models\Azure.Web.Hiker.Core.Models\Azure.Web.Hiker.Core.Models.csproj" />
-    <ProjectReference Include="..\..\Core\Persistence\Azure.Web.Hiker.Core.Persistence\Azure.Web.Hiker.Core.Persistence.csproj" />
-    <ProjectReference Include="..\..\Core\Services\Azure.Web.Hiker.Core.Services\Azure.Web.Hiker.Core.Services.csproj" />
+    <ProjectReference Include="..\..\Core\AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar.csproj" />
+    <ProjectReference Include="..\..\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj" />
+    <ProjectReference Include="..\..\Core\CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine.csproj" />
     <ProjectReference Include="..\..\PersistenceProviders\Azure.Web.Hiker.PersistenceProviders\Azure.Web.Hiker.PersistenceProviders.csproj" />
   </ItemGroup>
 

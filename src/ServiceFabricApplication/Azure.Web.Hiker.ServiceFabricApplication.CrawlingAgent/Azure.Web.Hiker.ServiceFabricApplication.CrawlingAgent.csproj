@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -19,10 +19,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="4.1.409" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SimpleInjector" Version="4.10.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Models\Azure.Web.Hiker.Core.Models\Azure.Web.Hiker.Core.Models.csproj" />
+    <ProjectReference Include="..\..\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj" />
+    <ProjectReference Include="..\..\Core\DNSResolver\Azure.Web.Hiker.Core.DNSResolver.csproj" />
+    <ProjectReference Include="..\..\Core\DNSResolver\UbietyResolver\Azure.Web.Hiker.Core.DNSResolver.UbietyResolver.csproj" />
   </ItemGroup>
 
 </Project>

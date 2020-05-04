@@ -4,17 +4,36 @@
     <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Stateless1_InstanceCount" DefaultValue="-1" />
     <Parameter Name="CrawlingEngine_InstanceCount" DefaultValue="-1" />
-    <Parameter Name="WebCrawlerURLListeningQueue" DefaultValue="" />
     <Parameter Name="ServiceBusSendConnectionString" DefaultValue="" />
     <Parameter Name="ServiceBusReceiveConnectionString" DefaultValue="" />
     <Parameter Name="AgentRegistrarDatabaseConnectionString" DefaultValue="" />
+    <Parameter Name="DnsServerIpAddress" DefaultValue="" />
+    <Parameter Name="DnsRequestsRetryCount" DefaultValue="" />
+    <Parameter Name="DnsRequestTimeoutValue" DefaultValue="" />
+    <Parameter Name="CreateAgentQueue" DefaultValue="" />
+    <Parameter Name="TenantId" DefaultValue="" />
+    <Parameter Name="ClientId" DefaultValue="" />
+    <Parameter Name="ClientSecret" DefaultValue="" />
+    <Parameter Name="NamespaceName" DefaultValue="" />
+    <Parameter Name="ResourceGroupName" DefaultValue="" />
+    <Parameter Name="SubscriptionId" DefaultValue="" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgentPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="DnsSection">
+            <Parameter Name="DnsServerIpAddress" Value="[DnsServerIpAddress]" />
+            <Parameter Name="DnsRequestsRetryCount" Value="[DnsRequestsRetryCount]" />
+            <Parameter Name="DnsRequestTimeoutValue" Value="[DnsRequestTimeoutValue]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="CrawlingEnginePkg" ServiceManifestVersion="1.0.0" />
@@ -22,9 +41,15 @@
       <ConfigOverride Name="Config">
         <Settings>
           <Section Name="ServiceBusConfigSection">
-            <Parameter Name="WebCrawlerURLListeningQueue" Value="[WebCrawlerURLListeningQueue]" />
+            <Parameter Name="CreateAgentQueue" Value="[CreateAgentQueue]" />
             <Parameter Name="ServiceBusSendConnectionString" Value="[ServiceBusSendConnectionString]" />
             <Parameter Name="ServiceBusReceiveConnectionString" Value="[ServiceBusReceiveConnectionString]" />
+            <Parameter Name="TenantId" Value="[TenantId]" />
+            <Parameter Name="ClientId" Value="[ClientId]" />
+            <Parameter Name="ClientSecret" Value="[ClientSecret]" />
+            <Parameter Name="NamespaceName" Value="[NamespaceName]" />
+            <Parameter Name="ResourceGroupName" Value="[ResourceGroupName]" />
+            <Parameter Name="SubscriptionId" Value="[SubscriptionId]" />
           </Section>
           <Section Name="AgentRegistrarDatabaseSection">
             <Parameter Name="ConnectionString" Value="[AgentRegistrarDatabaseConnectionString]" />

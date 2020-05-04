@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Fabric;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Azure.Web.Hiker.Core.Models;
+using Azure.Web.Hiker.Core.CrawlingAgent.Models;
+using Azure.Web.Hiker.Core.DnsResolver.Interfaces;
 
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
@@ -19,9 +21,12 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
     /// </summary>
     internal sealed class CrawlingAgent : StatelessService
     {
-        public CrawlingAgent(StatelessServiceContext context)
+        private readonly IDnsResolver _dnsResolver;
+        public CrawlingAgent(StatelessServiceContext context, IDnsResolver dnsResolver)
             : base(context)
-        { }
+        {
+            _dnsResolver = dnsResolver;
+        }
 
         /// <summary>
         /// Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
@@ -45,13 +50,22 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
 
             var info = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(Context.InitializationData));
 
+            IPAddress ip = null;
+
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var conf = Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
                 var host = conf.Settings.Sections["AssignedByCrawlingEngineConfigSection"].Parameters["CrawlingHost"].Value;
                 ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
-                ServiceEventSource.Current.ServiceMessage(this.Context, info.AssignedHostNmae);
+                ServiceEventSource.Current.ServiceMessage(this.Context, info.AssignedHostName);
+
+                if (ip is null)
+                {
+                    ip = _dnsResolver.ResolveHostIpAddress(info.AssignedHostName);
+                }
+
+                ServiceEventSource.Current.ServiceMessage(this.Context, "IP: ", ip);
 
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }

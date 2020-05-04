@@ -28,8 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Core\Persistence\Azure.Web.Hiker.Core.Persistence\Azure.Web.Hiker.Core.Persistence.csproj" />
-    <ProjectReference Include="..\..\src\Core\Services\Azure.Web.Hiker.Core.Services\Azure.Web.Hiker.Core.Services.csproj" />
+    <ProjectReference Include="..\..\src\Core\AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar.csproj" />
   </ItemGroup>
 
 </Project>

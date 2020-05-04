@@ -5,8 +5,8 @@ using System.Fabric.Description;
 using System.Text;
 using System.Threading.Tasks;
 
-using Azure.Web.Hiker.Core.Models;
-using Azure.Web.Hiker.Core.Services.AgentController;
+using Azure.Web.Hiker.Core.CrawlingAgent.Models;
+using Azure.Web.Hiker.Core.CrawlingEngine.Services;
 
 using Newtonsoft.Json;
 
@@ -25,7 +25,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services
 
         public async Task SpawnNewAgentForHostnameAsync(string hostname, string serviceName)
         {
-            var crawlerData = JsonConvert.SerializeObject(new CrawlerAgentInitializationData { AssignedHostNmae = hostname });
+            var crawlerData = JsonConvert.SerializeObject(new CrawlerAgentInitializationData { AssignedHostName = hostname });
 
             var serviceDescriptions = new List<StatelessServiceDescription>();
             var statelessServiceDescription = new StatelessServiceDescription()

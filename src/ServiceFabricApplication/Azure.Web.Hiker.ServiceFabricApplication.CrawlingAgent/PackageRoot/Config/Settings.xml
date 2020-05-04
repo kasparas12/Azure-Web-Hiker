@@ -5,4 +5,10 @@
   <Section Name="AssignedByCrawlingEngineConfigSection">
     <Parameter Name="CrawlingHost" Value="" />
   </Section>
+
+  <Section Name="DnsSection">
+    <Parameter Name="DnsServerIpAddress" Value="" />
+    <Parameter Name="DnsRequestsRetryCount" Value="" />
+    <Parameter Name="DnsRequestTimeoutValue" Value="" />
+  </Section>
 </Settings>
