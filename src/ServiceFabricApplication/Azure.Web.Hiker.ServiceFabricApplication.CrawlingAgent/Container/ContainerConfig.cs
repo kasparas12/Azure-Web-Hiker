@@ -1,8 +1,10 @@
 ﻿using System.Fabric;
+using System.Text;
 
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.QueueClient;
+using Azure.Web.Hiker.Core.CrawlingAgent.Models;
 using Azure.Web.Hiker.Core.DnsResolver.Interfaces;
 using Azure.Web.Hiker.DNSResolver.UbietyResolver;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
@@ -11,7 +13,7 @@ using Azure.Web.Hiker.PersistenceProviders.Dapper;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Helpers;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.MessageHandlers;
 
-using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
+using Newtonsoft.Json;
 
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
@@ -29,10 +31,12 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             ConfigureDnsResolver(container);
             ConfigureRepositories(container, context);
             ConfigureCoreServices(container);
+            ConfigureCrawlingHostData(context, container);
             ConfigureServiceBusFrontQueueListener(context, container);
+            ConfigureServiceBusCrawlingQueueListener(context, container);
 
             container.RegisterInstance<StatelessServiceContext>(context);
-            container.Register<CrawlingAgent>(() => new CrawlingAgent(context, container.GetInstance<IDnsResolver>()), Lifestyle.Singleton);
+            container.Register<CrawlingAgent>(() => new CrawlingAgent(context), Lifestyle.Singleton);
 
             return container;
         }
@@ -68,8 +72,25 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             string serviceBusQueueName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["CrawlingFrontQueueName"].Value;
             string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
 
-            container.Register<ServiceBusQueueCommunicationListener>(() => new ServiceBusQueueCommunicationListener(
+            container.Register<FrontQueueCommunicationListener>(() => new FrontQueueCommunicationListener(
                 cl => new FrontQueueMessageHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<IWebCrawlerQueueClient>()), context, serviceBusQueueName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+        }
+
+        private static void ConfigureServiceBusCrawlingQueueListener(StatelessServiceContext context, SimpleInjector.Container container)
+        {
+            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
+
+            var assignedHostName = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(context.InitializationData));
+
+            container.Register<CrawlingQueueCommunicationListener>(() => new CrawlingQueueCommunicationListener(
+                cl => new CrawlingQueueMessageHandler(cl, context), context, assignedHostName.AssignedHostName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+        }
+
+        private static void ConfigureCrawlingHostData(StatelessServiceContext context, SimpleInjector.Container container)
+        {
+            var assignedHostName = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(context.InitializationData));
+            container.Register<ICrawlingAgentHost>(() => new CrawlerAgentInitializationData(assignedHostName.AssignedHostName));
         }
     }
 }

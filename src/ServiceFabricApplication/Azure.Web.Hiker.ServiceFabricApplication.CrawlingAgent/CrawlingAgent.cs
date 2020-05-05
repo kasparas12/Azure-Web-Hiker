@@ -1,20 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Fabric;
-using System.Net;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Azure.Web.Hiker.Core.CrawlingAgent.Models;
-using Azure.Web.Hiker.Core.DnsResolver.Interfaces;
 
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
-
-using Newtonsoft.Json;
-
-using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
 
 namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
 {
@@ -23,11 +11,10 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
     /// </summary>
     internal sealed class CrawlingAgent : StatelessService
     {
-        private readonly IDnsResolver _dnsResolver;
-        public CrawlingAgent(StatelessServiceContext context, IDnsResolver dnsResolver)
+        public CrawlingAgent(StatelessServiceContext context)
             : base(context)
         {
-            _dnsResolver = dnsResolver;
+
         }
 
         /// <summary>
@@ -36,41 +23,11 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            yield return new ServiceInstanceListener(context => Program.ApplicationContainer.GetInstance<ServiceBusQueueCommunicationListener>());
-        }
-
-        /// <summary>
-        /// This is the main entry point for your service instance.
-        /// </summary>
-        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
-        protected override async Task RunAsync(CancellationToken cancellationToken)
-        {
-            // TODO: Replace the following sample code with your own logic 
-            //       or remove this RunAsync override if it's not needed in your service.
-
-            long iterations = 0;
-
-            var info = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(Context.InitializationData));
-
-            IPAddress ip = null;
-
-            while (true)
+            return new ServiceInstanceListener[]
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                var conf = Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
-                var host = conf.Settings.Sections["AssignedByCrawlingEngineConfigSection"].Parameters["CrawlingHost"].Value;
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
-                ServiceEventSource.Current.ServiceMessage(this.Context, info.AssignedHostName);
-
-                if (ip is null)
-                {
-                    ip = _dnsResolver.ResolveHostIpAddress(info.AssignedHostName);
-                }
-
-                ServiceEventSource.Current.ServiceMessage(this.Context, "IP: ", ip);
-
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-            }
+                new ServiceInstanceListener(context => Program.ApplicationContainer.GetInstance<FrontQueueCommunicationListener>()),
+                new ServiceInstanceListener(context => Program.ApplicationContainer.GetInstance<CrawlingQueueCommunicationListener>())
+            };
         }
     }
 }

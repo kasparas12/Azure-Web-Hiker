@@ -25,7 +25,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services
 
         public async Task SpawnNewAgentForHostnameAsync(string hostname, string serviceName)
         {
-            var crawlerData = JsonConvert.SerializeObject(new CrawlerAgentInitializationData { AssignedHostName = hostname });
+            var crawlerData = JsonConvert.SerializeObject(new CrawlerAgentInitializationData(hostname));
 
             var serviceDescriptions = new List<StatelessServiceDescription>();
             var statelessServiceDescription = new StatelessServiceDescription()
