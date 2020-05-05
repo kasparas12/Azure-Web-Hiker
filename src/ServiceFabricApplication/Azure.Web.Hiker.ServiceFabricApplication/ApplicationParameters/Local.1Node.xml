@@ -16,5 +16,6 @@
     <Parameter Name="NamespaceName" Value="" />
     <Parameter Name="ResourceGroupName" Value="" />
     <Parameter Name="SubscriptionId" Value="" />
+    <Parameter Name="StorageConnectionString" Value="" />
   </Parameters>
 </Application>

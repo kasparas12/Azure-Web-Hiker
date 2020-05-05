@@ -6,10 +6,14 @@ using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.CrawlingAgent.Models;
 using Azure.Web.Hiker.Core.DnsResolver.Interfaces;
+using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.DNSResolver.UbietyResolver;
+using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable;
+using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config;
+using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Models;
+using Azure.Web.Hiker.Infrastructure.Persistence.Dapper;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 using Azure.Web.Hiker.Infrastructure.ServiceFabric;
-using Azure.Web.Hiker.PersistenceProviders.Dapper;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Helpers;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.MessageHandlers;
 
@@ -56,8 +60,11 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             string connectionString = configurationPackage.Settings.Sections["AgentRegistrarDatabaseSection"].Parameters["ConnectionString"].Value;
+            string storageAccountConnectionString = configurationPackage.Settings.Sections["StorageAccountConfigSection"].Parameters["StorageConnectionString"].Value;
 
+            var cloudTable = PageIndexCloudTable.SetupPageIndexCloudTable(storageAccountConnectionString).GetAwaiter().GetResult();
             container.Register<IAgentRegistrarRepository>(() => new DapperAgentRegistrarRepository(connectionString));
+            container.Register<IPageIndexStorageRepository<PageIndex>>(() => new PageIndexStorageRepository(cloudTable), Lifestyle.Transient);
         }
 
         private static void ConfigureCoreServices(SimpleInjector.Container container)
@@ -84,7 +91,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             var assignedHostName = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(context.InitializationData));
 
             container.Register<CrawlingQueueCommunicationListener>(() => new CrawlingQueueCommunicationListener(
-                cl => new CrawlingQueueMessageHandler(cl, context), context, assignedHostName.AssignedHostName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+                cl => new CrawlingQueueMessageHandler(cl, context, container.GetInstance<IPageIndexStorageRepository<PageIndex>>()), context, assignedHostName.AssignedHostName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
         }
 
         private static void ConfigureCrawlingHostData(StatelessServiceContext context, SimpleInjector.Container container)

@@ -17,6 +17,7 @@
     <Parameter Name="NamespaceName" DefaultValue="" />
     <Parameter Name="ResourceGroupName" DefaultValue="" />
     <Parameter Name="SubscriptionId" DefaultValue="" />
+    <Parameter Name="StorageConnectionString" DefaultValue="" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
@@ -38,6 +39,9 @@
           </Section>
           <Section Name="AgentRegistrarDatabaseSection">
             <Parameter Name="ConnectionString" Value="[AgentRegistrarDatabaseConnectionString]" />
+          </Section>
+          <Section Name="StorageAccountConfigSection">
+            <Parameter Name="StorageConnectionString" Value="[StorageConnectionString]" />
           </Section>
         </Settings>
       </ConfigOverride>

@@ -20,4 +20,7 @@
   <Section Name="AgentRegistrarDatabaseSection">
     <Parameter Name="ConnectionString" Value="" />
   </Section>
+  <Section Name="StorageAccountConfigSection">
+    <Parameter Name="StorageConnectionString" Value="" />
+  </Section>
 </Settings>

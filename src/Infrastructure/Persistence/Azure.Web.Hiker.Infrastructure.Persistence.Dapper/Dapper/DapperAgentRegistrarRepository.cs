@@ -6,7 +6,7 @@ using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 
 using Dapper;
 
-namespace Azure.Web.Hiker.PersistenceProviders.Dapper
+namespace Azure.Web.Hiker.Infrastructure.Persistence.Dapper
 {
     public class DapperAgentRegistrarRepository : IAgentRegistrarRepository
     {
