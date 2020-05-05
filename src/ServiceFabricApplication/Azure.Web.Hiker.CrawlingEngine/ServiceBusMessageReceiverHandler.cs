@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
+using Azure.Web.Hiker.Core.Common.Messages;
 using Azure.Web.Hiker.Core.Common.QueueClient;
-using Azure.Web.Hiker.Core.CrawlingEngine.Messages;
 using Azure.Web.Hiker.Core.CrawlingEngine.Services;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient.Extensions;
 

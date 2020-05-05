@@ -34,5 +34,10 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
         {
             await SendMessage(message, _serviceBusSettings.CrawlingFrontQueueName);
         }
+
+        public async Task SendMessageToCreateNewAgentQueue<T>(T message) where T : IBaseMessage
+        {
+            await SendMessage(message, _serviceBusSettings.CreateAgentQueue);
+        }
     }
 }

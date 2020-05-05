@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="4.1.409" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="ServiceFabric.ServiceBus.Services.Netstd" Version="7.0.3" />
     <PackageReference Include="SimpleInjector" Version="4.10.2" />
   </ItemGroup>
 
@@ -26,6 +27,9 @@
     <ProjectReference Include="..\..\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj" />
     <ProjectReference Include="..\..\Core\DNSResolver\Azure.Web.Hiker.Core.DNSResolver.csproj" />
     <ProjectReference Include="..\..\Core\DNSResolver\UbietyResolver\Azure.Web.Hiker.Core.DNSResolver.UbietyResolver.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\AzureServiceBusCommunication\Azure.Web.Hiker.Infrastructure.ServiceBusClient\Azure.Web.Hiker.Infrastructure.ServiceBusClient.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ServiceFabric\Azure.Web.Hiker.Infrastructure.ServiceFabric\Azure.Web.Hiker.Infrastructure.ServiceFabric.csproj" />
+    <ProjectReference Include="..\..\PersistenceProviders\Azure.Web.Hiker.PersistenceProviders\Azure.Web.Hiker.PersistenceProviders.csproj" />
   </ItemGroup>
 
 </Project>

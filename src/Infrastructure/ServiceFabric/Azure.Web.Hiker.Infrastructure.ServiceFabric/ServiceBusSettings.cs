@@ -3,7 +3,7 @@ using System.Fabric.Description;
 
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 
-namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
+namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
 {
     public class ServiceBusSettings : IServiceBusSettings
     {
@@ -22,12 +22,16 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
 
         public string CrawlingFrontQueueName { get; set; }
 
+        public string CreateAgentQueue { get; set; }
+
+
         private void UpdateConfigSettings(ConfigurationSettings settings)
         {
             var generalSectionParams = settings.Sections["ServiceBusConfigSection"].Parameters;
 
             ServiceBusConnectionString = generalSectionParams["ServiceBusConnectionString"].Value;
             CrawlingFrontQueueName = generalSectionParams["CrawlingFrontQueueName"].Value;
+            CreateAgentQueue = generalSectionParams["CreateAgentQueue"].Value;
         }
     }
 }

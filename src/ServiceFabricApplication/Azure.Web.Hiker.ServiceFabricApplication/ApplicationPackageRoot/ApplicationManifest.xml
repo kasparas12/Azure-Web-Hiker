@@ -31,6 +31,14 @@
             <Parameter Name="DnsRequestsRetryCount" Value="[DnsRequestsRetryCount]" />
             <Parameter Name="DnsRequestTimeoutValue" Value="[DnsRequestTimeoutValue]" />
           </Section>
+          <Section Name="ServiceBusConfigSection">
+            <Parameter Name="CrawlingFrontQueueName" Value="[CrawlingFrontQueueName]" />
+            <Parameter Name="ServiceBusConnectionString" Value="[ServiceBusConnectionString]" />
+            <Parameter Name="CreateAgentQueue" Value="[CreateAgentQueue]" />
+          </Section>
+          <Section Name="AgentRegistrarDatabaseSection">
+            <Parameter Name="ConnectionString" Value="[AgentRegistrarDatabaseConnectionString]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>

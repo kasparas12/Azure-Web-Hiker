@@ -14,6 +14,8 @@ using Microsoft.ServiceFabric.Services.Runtime;
 
 using Newtonsoft.Json;
 
+using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
+
 namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
 {
     /// <summary>
@@ -34,7 +36,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            return new ServiceInstanceListener[0];
+            yield return new ServiceInstanceListener(context => Program.ApplicationContainer.GetInstance<ServiceBusQueueCommunicationListener>());
         }
 
         /// <summary>

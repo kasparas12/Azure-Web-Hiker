@@ -5,6 +5,7 @@ using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.CrawlingEngine.Services;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
+using Azure.Web.Hiker.Infrastructure.ServiceFabric;
 using Azure.Web.Hiker.PersistenceProviders.Dapper;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
 

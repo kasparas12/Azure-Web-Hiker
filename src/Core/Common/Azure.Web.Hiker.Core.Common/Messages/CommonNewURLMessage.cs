@@ -4,16 +4,16 @@ using Azure.Web.Hiker.Core.Common.QueueClient;
 
 using Newtonsoft.Json;
 
-namespace Azure.Web.Hiker.Core.CrawlingEngine.Messages
+namespace Azure.Web.Hiker.Core.Common.Messages
 {
-    public class CreateNewAgentMessage : IBaseMessage
+    public abstract class CommonNewUrlMessage : IBaseMessage
     {
-        public CreateNewAgentMessage()
+        public CommonNewUrlMessage()
         {
 
         }
 
-        public CreateNewAgentMessage(string url)
+        public CommonNewUrlMessage(string url)
         {
             NewUrl = url;
         }
