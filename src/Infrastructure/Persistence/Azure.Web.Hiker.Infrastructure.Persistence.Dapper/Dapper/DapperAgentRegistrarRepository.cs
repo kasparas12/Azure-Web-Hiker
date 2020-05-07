@@ -47,6 +47,16 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.Dapper
             }
         }
 
+        public int GetNumberOfActiveAgents()
+        {
+            var sql = "SELECT COUNT(*) FROM dbo.agent_registrar WHERE is_deleted = 0";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return connection.QueryFirstOrDefault<int>(sql);
+            }
+        }
+
         public void InsertNewAgent(IAgentRegistrarEntry newEntry)
         {
             var sql = "INSERT INTO dbo.agent_registrar(agent_name,agent_host,is_deleted,created_at) VALUES (@Name, @Host, 0, @CreatedAt)";

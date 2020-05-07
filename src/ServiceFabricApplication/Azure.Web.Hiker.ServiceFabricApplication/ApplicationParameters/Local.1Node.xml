@@ -6,7 +6,7 @@
     <Parameter Name="AgentRegistrarDatabaseConnectionString" Value="" />
     <Parameter Name="DnsServerIpAddress" Value="8.8.8.8" />
     <Parameter Name="DnsRequestsRetryCount" Value="3" />
-    <Parameter Name="DnsRequestTimeoutValue" Value="1000" />
+    <Parameter Name="DnsRequestTimeoutValue" Value="" />
     <Parameter Name="ServiceBusConnectionString" Value="" />
     <Parameter Name="CreateAgentQueue" Value="create-agent-queue" />
     <Parameter Name="CrawlingFrontQueueName" Value="crawling-front-queue" />
@@ -17,5 +17,6 @@
     <Parameter Name="ResourceGroupName" Value="" />
     <Parameter Name="SubscriptionId" Value="" />
     <Parameter Name="StorageConnectionString" Value="" />
+    <Parameter Name="MaxAgentsValue" Value="" />
   </Parameters>
 </Application>

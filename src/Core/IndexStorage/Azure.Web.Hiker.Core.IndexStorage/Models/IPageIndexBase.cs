@@ -28,4 +28,20 @@ namespace Azure.Web.Hiker.Core.IndexStorage.Models
             }
         }
     }
+
+    public class PageIndex : IPageIndex
+    {
+        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt = null)
+        {
+            PageUrl = url;
+            HitCount = hitcount;
+            Visited = visited;
+            VisitedTimestamp = visitedAt;
+        }
+
+        public string PageUrl { get; set; }
+        public int HitCount { get; set; }
+        public bool Visited { get; set; }
+        public DateTime? VisitedTimestamp { get; set; }
+    }
 }

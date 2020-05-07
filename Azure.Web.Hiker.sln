@@ -61,13 +61,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastruct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastructure.ServiceFabric", "src\Infrastructure\ServiceFabric\Azure.Web.Hiker.Infrastructure.ServiceFabric\Azure.Web.Hiker.Infrastructure.ServiceFabric.csproj", "{2504C3CC-C1BA-4F46-BE7B-D2263877EA08}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastructure.Persistence.CosmosDB", "src\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.CosmosDB\Azure.Web.Hiker.Infrastructure.Persistence.CosmosDB.csproj", "{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable", "src\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.csproj", "{C3070DDF-6B7F-411C-BD6F-AFD5F625A508}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable", "src\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.csproj", "{C3070DDF-6B7F-411C-BD6F-AFD5F625A508}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IndexStorage", "IndexStorage", "{343DA63D-1650-4598-BFF2-3B3CCAC0D43F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Core.IndexStorage", "src\Core\IndexStorage\Azure.Web.Hiker.Core.IndexStorage\Azure.Web.Hiker.Core.IndexStorage.csproj", "{98F5708B-3076-462B-8708-B013B7BEF0E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Core.CrawlingAgent.IndexStorage", "src\Core\IndexStorage\Azure.Web.Hiker.Core.IndexStorage\Azure.Web.Hiker.Core.CrawlingAgent.IndexStorage.csproj", "{98F5708B-3076-462B-8708-B013B7BEF0E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Infrastructure.Abot2Crawler", "src\Infrastructure\Azure.Web.Hiker.Infrastructure.Abot2Crawler\Azure.Web.Hiker.Infrastructure.Abot2Crawler.csproj", "{03534BE0-9BCE-49B9-A852-C47CB298E877}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -183,14 +185,6 @@ Global
 		{2504C3CC-C1BA-4F46-BE7B-D2263877EA08}.Release|Any CPU.Build.0 = Release|x64
 		{2504C3CC-C1BA-4F46-BE7B-D2263877EA08}.Release|x64.ActiveCfg = Release|x64
 		{2504C3CC-C1BA-4F46-BE7B-D2263877EA08}.Release|x64.Build.0 = Release|x64
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}.Debug|x64.Build.0 = Debug|Any CPU
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}.Release|x64.ActiveCfg = Release|Any CPU
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC}.Release|x64.Build.0 = Release|Any CPU
 		{C3070DDF-6B7F-411C-BD6F-AFD5F625A508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C3070DDF-6B7F-411C-BD6F-AFD5F625A508}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3070DDF-6B7F-411C-BD6F-AFD5F625A508}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -207,6 +201,22 @@ Global
 		{98F5708B-3076-462B-8708-B013B7BEF0E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{98F5708B-3076-462B-8708-B013B7BEF0E4}.Release|x64.ActiveCfg = Release|Any CPU
 		{98F5708B-3076-462B-8708-B013B7BEF0E4}.Release|x64.Build.0 = Release|Any CPU
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}.Debug|x64.Build.0 = Debug|Any CPU
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}.Release|x64.ActiveCfg = Release|Any CPU
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3}.Release|x64.Build.0 = Release|Any CPU
+		{03534BE0-9BCE-49B9-A852-C47CB298E877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03534BE0-9BCE-49B9-A852-C47CB298E877}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03534BE0-9BCE-49B9-A852-C47CB298E877}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{03534BE0-9BCE-49B9-A852-C47CB298E877}.Debug|x64.Build.0 = Debug|Any CPU
+		{03534BE0-9BCE-49B9-A852-C47CB298E877}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03534BE0-9BCE-49B9-A852-C47CB298E877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03534BE0-9BCE-49B9-A852-C47CB298E877}.Release|x64.ActiveCfg = Release|Any CPU
+		{03534BE0-9BCE-49B9-A852-C47CB298E877}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -235,10 +245,11 @@ Global
 		{ECAB5AD4-2FEF-4AD7-AACB-409BD2D29DD6} = {EEE603DF-657B-44C3-8699-7331E4310172}
 		{D0E3FD7A-5F82-4376-88D0-A20D512D089F} = {ECAB5AD4-2FEF-4AD7-AACB-409BD2D29DD6}
 		{2504C3CC-C1BA-4F46-BE7B-D2263877EA08} = {ECAB5AD4-2FEF-4AD7-AACB-409BD2D29DD6}
-		{62FBA116-2EE7-40B4-A16D-B1E4F64A99CC} = {0CF5924E-870F-4C78-893A-03E35E7DA70A}
 		{C3070DDF-6B7F-411C-BD6F-AFD5F625A508} = {0CF5924E-870F-4C78-893A-03E35E7DA70A}
-		{343DA63D-1650-4598-BFF2-3B3CCAC0D43F} = {D38B0B25-F916-4A4C-918E-F1834D759E3A}
+		{343DA63D-1650-4598-BFF2-3B3CCAC0D43F} = {E5499A1B-83A8-46C0-B8BF-0D7F72BD89B3}
 		{98F5708B-3076-462B-8708-B013B7BEF0E4} = {343DA63D-1650-4598-BFF2-3B3CCAC0D43F}
+		{9194EA31-E35A-4DF8-8EAB-9E64D5A57AB3} = {EEE603DF-657B-44C3-8699-7331E4310172}
+		{03534BE0-9BCE-49B9-A852-C47CB298E877} = {ECAB5AD4-2FEF-4AD7-AACB-409BD2D29DD6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3641BBA2-8F8A-45CC-A2AC-B065ECDE4503}

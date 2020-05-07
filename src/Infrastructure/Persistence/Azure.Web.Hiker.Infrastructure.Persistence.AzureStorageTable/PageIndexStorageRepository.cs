@@ -3,13 +3,15 @@ using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Core.Common.Extensions;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
-using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Models;
+using Azure.Web.Hiker.Core.IndexStorage.Models;
 
 using Microsoft.Azure.Cosmos.Table;
 
+using PageIndex = Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Models.PageIndex;
+
 namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable
 {
-    public class PageIndexStorageRepository : IPageIndexStorageRepository<PageIndex>
+    public class PageIndexStorageRepository : IPageIndexStorageRepository
     {
         private readonly CloudTable _cloudTable;
 
@@ -18,7 +20,7 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable
             _cloudTable = cloudTable;
         }
 
-        public async Task<PageIndex> GetPageIndexByUrl(string url)
+        public async Task<IPageIndex> GetPageIndexByUrl(string url)
         {
             try
             {
@@ -34,20 +36,21 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable
             }
         }
 
-        public async Task InsertNewPageIndex(PageIndex entity)
+        public async Task InsertOrMergeNewPageIndex(IPageIndex entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity cannot be null");
             }
 
-            entity.PartitionKey = entity.PageUrl.GetHostOfUrl();
-            entity.RowKey = entity.PageUrl.CalculateMD5HashOfUrl();
+            var index = new PageIndex(entity.PageUrl, entity.HitCount, entity.Visited, entity.VisitedTimestamp);
+            index.PartitionKey = entity.PageUrl.GetHostOfUrl();
+            index.RowKey = entity.PageUrl.CalculateMD5HashOfUrl();
 
             try
             {
                 // Create the InsertOrReplace table operation
-                TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
+                TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(index);
 
                 // Execute the operation.
                 TableResult result = await _cloudTable.ExecuteAsync(insertOrMergeOperation);
@@ -57,11 +60,6 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable
             {
                 throw;
             }
-        }
-
-        public Task<bool> IsPageIndexAlreadyVisited(string url)
-        {
-            throw new NotImplementedException();
         }
     }
 }

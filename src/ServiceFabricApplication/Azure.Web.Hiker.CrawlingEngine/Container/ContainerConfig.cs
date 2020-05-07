@@ -3,6 +3,7 @@
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.QueueClient;
+using Azure.Web.Hiker.Core.Common.Settings;
 using Azure.Web.Hiker.Core.CrawlingEngine.Services;
 using Azure.Web.Hiker.Infrastructure.Persistence.Dapper;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
@@ -28,6 +29,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
 
             ConfigureRepositories(container, context);
             ConfigureCoreServices(container);
+            ConfigureGeneralApplicationConfig(container, context);
             ConfigureAgentProcessingQueueCreator(container, context);
             ConfigureServiceBusListener(context, container);
 
@@ -73,6 +75,11 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
 
             var serviceBusCredentials = new ServiceBusCredentials(tenantId, clientId, clientSecret, namespaceName, subscriptionId, resourceGroupName);
             container.Register<IAgentProcessingQueueCreator>(() => new ServiceBusAgentProcessingQueueCreator(serviceBusCredentials));
+        }
+
+        private static void ConfigureGeneralApplicationConfig(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            container.Register<IGeneralApplicationSettings>(() => new GeneralApplicationSettings(context));
         }
     }
 }

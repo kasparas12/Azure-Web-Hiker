@@ -1,5 +1,6 @@
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
+using Azure.Web.Hiker.Core.Common.Settings;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -11,12 +12,14 @@ namespace Azure.Web.Hiker.Tests.Core
     public class AgentRegistrarServiceTests
     {
         private Mock<IAgentRegistrarRepository> _repositoryMock;
+        private Mock<IGeneralApplicationSettings> _generalApplicationSettingsMock;
         private AgentRegistrarService _service;
 
         public AgentRegistrarServiceTests()
         {
             _repositoryMock = new Mock<IAgentRegistrarRepository>();
-            _service = new AgentRegistrarService(_repositoryMock.Object);
+            _generalApplicationSettingsMock = new Mock<IGeneralApplicationSettings>();
+            _service = new AgentRegistrarService(_repositoryMock.Object, _generalApplicationSettingsMock.Object);
         }
 
         [TestMethod]

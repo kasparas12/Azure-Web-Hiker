@@ -41,9 +41,17 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
             {
                 var createdEntry = _agentRegistrarService.CreateNewAgentRegistrarForHostName(newAgentURL.GetHostOfPage());
 
-                await _agentProcessingQueueCreator.CreateNewProcessingQueueForAgent(newAgentURL.GetHostOfPage());
-                await _agentController.SpawnNewAgentForHostnameAsync(createdEntry.AgentHost, createdEntry.AgentName);
-                await _webCrawlerQueueClient.SendMessageToCrawlingAgentProcessingQueue(new AddNewURLToCrawlingAgentMessage(newAgentURL.NewUrl), newAgentURL.GetHostOfPage());
+                if (createdEntry.SuccessfullyCreated)
+                {
+                    await _agentProcessingQueueCreator.CreateNewProcessingQueueForAgent(newAgentURL.GetHostOfPage());
+                    await _agentController.SpawnNewAgentForHostnameAsync(createdEntry.AgentHost, createdEntry.AgentName);
+                    await _webCrawlerQueueClient.SendMessageToCrawlingAgentProcessingQueue(new AddNewURLToCrawlingAgentMessage(newAgentURL.NewUrl), newAgentURL.GetHostOfPage());
+                }
+                else
+                {
+                    await Task.Delay(10000);
+                    await _webCrawlerQueueClient.SendMessageToCreateNewAgentQueue(newAgentURL);
+                }
             }
         }
     }

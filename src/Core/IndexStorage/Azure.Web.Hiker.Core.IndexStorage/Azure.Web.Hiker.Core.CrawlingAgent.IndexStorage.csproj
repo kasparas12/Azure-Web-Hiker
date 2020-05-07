@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>Azure.Web.Hiker.Core.CrawlingAgent.IndexStorage</AssemblyName>
+    <RootNamespace>Azure.Web.Hiker.Core.CrawlingAgent.IndexStorage</RootNamespace>
+  </PropertyGroup>
+
+</Project>

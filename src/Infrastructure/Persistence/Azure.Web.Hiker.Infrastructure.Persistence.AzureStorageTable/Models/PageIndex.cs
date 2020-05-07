@@ -19,7 +19,7 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Models
             HitCount = hitcount;
             Visited = visited;
         }
-        public PageIndex(string url, int hitcount, bool visited, DateTime visitedAt) : this(url, hitcount, visited)
+        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt) : this(url, hitcount, visited)
         {
             VisitedTimestamp = visitedAt;
         }

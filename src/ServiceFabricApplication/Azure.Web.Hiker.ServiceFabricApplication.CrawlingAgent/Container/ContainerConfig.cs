@@ -4,13 +4,16 @@ using System.Text;
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.QueueClient;
+using Azure.Web.Hiker.Core.Common.Settings;
 using Azure.Web.Hiker.Core.CrawlingAgent.Models;
+using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
+using Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer;
 using Azure.Web.Hiker.Core.DnsResolver.Interfaces;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.DNSResolver.UbietyResolver;
+using Azure.Web.Hiker.Infrastructure.Abot2Crawler;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config;
-using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Models;
 using Azure.Web.Hiker.Infrastructure.Persistence.Dapper;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 using Azure.Web.Hiker.Infrastructure.ServiceFabric;
@@ -35,6 +38,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             ConfigureDnsResolver(container);
             ConfigureRepositories(container, context);
             ConfigureCoreServices(container);
+            ConfigureGeneralApplicationConfig(container, context);
             ConfigureCrawlingHostData(context, container);
             ConfigureServiceBusFrontQueueListener(context, container);
             ConfigureServiceBusCrawlingQueueListener(context, container);
@@ -64,7 +68,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
 
             var cloudTable = PageIndexCloudTable.SetupPageIndexCloudTable(storageAccountConnectionString).GetAwaiter().GetResult();
             container.Register<IAgentRegistrarRepository>(() => new DapperAgentRegistrarRepository(connectionString));
-            container.Register<IPageIndexStorageRepository<PageIndex>>(() => new PageIndexStorageRepository(cloudTable), Lifestyle.Transient);
+            container.Register<IPageIndexStorageRepository>(() => new PageIndexStorageRepository(cloudTable), Lifestyle.Transient);
         }
 
         private static void ConfigureCoreServices(SimpleInjector.Container container)
@@ -72,6 +76,8 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             container.Register<IAgentRegistrarService, AgentRegistrarService>();
             container.Register<IServiceBusSettings, ServiceBusSettings>();
             container.Register<IWebCrawlerQueueClient, ServiceBusQueueClient>();
+            container.Register<IPageIndexer, PageIndexer>();
+            container.Register<IPageCrawler, AbotWebCrawler>();
         }
         private static void ConfigureServiceBusFrontQueueListener(StatelessServiceContext context, SimpleInjector.Container container)
         {
@@ -91,13 +97,18 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             var assignedHostName = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(context.InitializationData));
 
             container.Register<CrawlingQueueCommunicationListener>(() => new CrawlingQueueCommunicationListener(
-                cl => new CrawlingQueueMessageHandler(cl, context, container.GetInstance<IPageIndexStorageRepository<PageIndex>>()), context, assignedHostName.AssignedHostName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+                cl => new CrawlingQueueMessageHandler(cl, container.GetInstance<IPageIndexer>(), container.GetInstance<IPageCrawler>(), container.GetInstance<ICrawlingAgentHost>()), context, assignedHostName.AssignedHostName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
         }
 
         private static void ConfigureCrawlingHostData(StatelessServiceContext context, SimpleInjector.Container container)
         {
             var assignedHostName = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(context.InitializationData));
             container.Register<ICrawlingAgentHost>(() => new CrawlerAgentInitializationData(assignedHostName.AssignedHostName));
+        }
+
+        private static void ConfigureGeneralApplicationConfig(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            container.Register<IGeneralApplicationSettings>(() => new GeneralApplicationSettings(context));
         }
     }
 }

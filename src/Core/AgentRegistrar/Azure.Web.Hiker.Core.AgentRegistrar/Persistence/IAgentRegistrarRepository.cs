@@ -9,5 +9,6 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Persistence
         void InsertNewAgent(IAgentRegistrarEntry newEntry);
         void DeleteAgent(int agentId);
         int GetNextAgentCounterNumber();
+        int GetNumberOfActiveAgents();
     }
 }

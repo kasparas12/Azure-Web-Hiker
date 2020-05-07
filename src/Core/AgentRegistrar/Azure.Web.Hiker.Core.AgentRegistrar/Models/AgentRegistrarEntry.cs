@@ -6,6 +6,7 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Models
     {
         public string AgentName { get; set; }
         public string AgentHost { get; set; }
+        public bool SuccessfullyCreated { get; set; }
     }
 
     public class AgentRegistrarEntry : BaseEntity, IAgentRegistrarEntry
@@ -23,5 +24,6 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Models
 
         public string AgentName { get; set; }
         public string AgentHost { get; set; }
+        public bool SuccessfullyCreated { get; set; }
     }
 }
