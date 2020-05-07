@@ -11,15 +11,38 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler.Models
 {
     public class AbotCrawlResult : IPageCrawlResult
     {
-        public AbotCrawlResult(CrawledPage crawledPage)
+        public AbotCrawlResult(string crawlerDisallowedReason)
         {
-            StatusCode = crawledPage.HttpResponseMessage.StatusCode;
-            PageLinks = crawledPage.ParsedLinks != null ? crawledPage.ParsedLinks.Select(x => x.HrefValue) : null;
-            HTMLContent = crawledPage.Content.Text;
-            ElapsedMilliseconds = crawledPage.Elapsed;
+            if (!string.IsNullOrWhiteSpace(crawlerDisallowedReason))
+            {
+                DisallowedCrawlingMessage = crawlerDisallowedReason;
+            }
         }
 
-        public HttpStatusCode StatusCode { get; set; }
+        public AbotCrawlResult(CrawledPage crawledPage)
+        {
+            if (crawledPage.HttpRequestException != null)
+            {
+                StatusCode = HttpStatusCode.RequestTimeout;
+                ElapsedMilliseconds = crawledPage.Elapsed;
+            }
+            else
+            {
+                StatusCode = crawledPage.HttpResponseMessage.StatusCode;
+                PageLinks = crawledPage.ParsedLinks != null ? crawledPage.ParsedLinks.Select(x => x.HrefValue) : null;
+                HTMLContent = crawledPage.Content.Text;
+                ElapsedMilliseconds = crawledPage.Elapsed;
+            }
+        } 
+
+        public AbotCrawlResult(HttpStatusCode statusCode, double elapsedMilliseconds)
+        {
+            StatusCode = statusCode;
+            ElapsedMilliseconds = elapsedMilliseconds;
+        }
+        public string DisallowedCrawlingMessage { get; set; }
+
+        public HttpStatusCode? StatusCode { get; set; }
         public IEnumerable<Uri> PageLinks { get; set; }
         public string HTMLContent { get; set; }
         public double ElapsedMilliseconds { get; set; }

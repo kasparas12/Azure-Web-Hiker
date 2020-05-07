@@ -22,7 +22,7 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
 
         public string CrawlingFrontQueueName { get; set; }
 
-        public string CreateAgentQueue { get; set; }
+        public string CWCEControlQueue { get; set; }
 
 
         private void UpdateConfigSettings(ConfigurationSettings settings)
@@ -31,7 +31,7 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
 
             ServiceBusConnectionString = generalSectionParams["ServiceBusConnectionString"].Value;
             CrawlingFrontQueueName = generalSectionParams["CrawlingFrontQueueName"].Value;
-            CreateAgentQueue = generalSectionParams["CreateAgentQueue"].Value;
+            CWCEControlQueue = generalSectionParams["CWCEControlQueue"].Value;
         }
     }
 }

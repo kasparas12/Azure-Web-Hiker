@@ -9,6 +9,8 @@ namespace Azure.Web.Hiker.Core.IndexStorage.Models
         public int HitCount { get; set; }
         public bool Visited { get; set; }
         public DateTime? VisitedTimestamp { get; set; }
+        public int? StatusCode { get; set; }
+        public string DisallowedCrawlReason { get; set; }
 
         public string CreateMD5HashOfUrl()
         {
@@ -31,17 +33,21 @@ namespace Azure.Web.Hiker.Core.IndexStorage.Models
 
     public class PageIndex : IPageIndex
     {
-        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt = null)
+        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt = null, int? statusCode = null, string disallowedReason = null)
         {
             PageUrl = url;
             HitCount = hitcount;
             Visited = visited;
             VisitedTimestamp = visitedAt;
+            StatusCode = statusCode;
+            DisallowedCrawlReason = disallowedReason;
         }
 
         public string PageUrl { get; set; }
         public int HitCount { get; set; }
         public bool Visited { get; set; }
         public DateTime? VisitedTimestamp { get; set; }
+        public int? StatusCode { get; set; }
+        public string DisallowedCrawlReason { get; set; }
     }
 }

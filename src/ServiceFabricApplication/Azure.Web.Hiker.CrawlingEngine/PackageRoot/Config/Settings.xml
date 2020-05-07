@@ -6,7 +6,7 @@
   </Section>
   <Section Name="ServiceBusConfigSection">
     
-    <Parameter Name="CreateAgentQueue" Value="" />
+    <Parameter Name="CWCEControlQueue" Value="" />
     <Parameter Name="CrawlingFrontQueueName" Value=""/>
     <Parameter Name="ServiceBusConnectionString" Value="" />
 
@@ -16,9 +16,12 @@
     <Parameter Name="NamespaceName" Value="" />
     <Parameter Name="ResourceGroupName" Value="" />
     <Parameter Name="SubscriptionId" Value="" />
-    
+
   </Section>
   <Section Name="AgentRegistrarDatabaseSection">
     <Parameter Name="ConnectionString" Value="" />
+  </Section>
+  <Section Name="StorageAccountConfigSection">
+    <Parameter Name="StorageConnectionString" Value="" />
   </Section>
 </Settings>

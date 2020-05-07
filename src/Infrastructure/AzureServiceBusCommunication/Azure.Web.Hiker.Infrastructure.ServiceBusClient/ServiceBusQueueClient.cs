@@ -61,6 +61,22 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
             await queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(serializedObject)));
         }
 
+        public async Task SendMessages<T>(IEnumerable<T> messages, string queueName) where T : IBaseMessage
+        {
+            var queueClient = new QueueClient(_serviceBusSettings.ServiceBusConnectionString, queueName);
+
+            foreach (var msg in messages)
+            {
+                var serializedObject = JsonConvert.SerializeObject(msg);
+                await queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(serializedObject)));
+            }
+        }
+
+        public async Task SendMessagesToCrawlingFrontQueue<T>(IEnumerable<T> messages) where T : IBaseMessage
+        {
+            await SendMessages(messages, _serviceBusSettings.CrawlingFrontQueueName);
+        }
+
         public async Task SendMessageToCrawlingAgentProcessingQueue<T>(T message, string hostName) where T : IBaseMessage
         {
             await SendMessage(message, hostName);
@@ -71,10 +87,6 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
             await SendMessage(message, _serviceBusSettings.CrawlingFrontQueueName);
         }
 
-        public async Task SendMessageToCreateNewAgentQueue<T>(T message) where T : IBaseMessage
-        {
-            await SendMessage(message, _serviceBusSettings.CreateAgentQueue);
-        }
 
         public async Task SendScheduledMessageToCrawlingAgentProcessingQueue<T>(T message, string hostName, DateTime scheduledTime) where T : IBaseMessage
         {

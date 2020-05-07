@@ -1,8 +1,10 @@
 ﻿using System.Fabric;
 using System.Text;
 
+using Azure.Web.Hiker.Core.AgentRegistrar;
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
+using Azure.Web.Hiker.Core.Common.Metrics;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.Common.Settings;
 using Azure.Web.Hiker.Core.CrawlingAgent.Models;
@@ -12,6 +14,7 @@ using Azure.Web.Hiker.Core.DnsResolver.Interfaces;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.DNSResolver.UbietyResolver;
 using Azure.Web.Hiker.Infrastructure.Abot2Crawler;
+using Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config;
 using Azure.Web.Hiker.Infrastructure.Persistence.Dapper;
@@ -19,6 +22,10 @@ using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 using Azure.Web.Hiker.Infrastructure.ServiceFabric;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Helpers;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.MessageHandlers;
+using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
+
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 
 using Newtonsoft.Json;
 
@@ -42,6 +49,8 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             ConfigureCrawlingHostData(context, container);
             ConfigureServiceBusFrontQueueListener(context, container);
             ConfigureServiceBusCrawlingQueueListener(context, container);
+            ConfigureAgentProcessingQueueCreator(container, context);
+            ConfigureApplicationInsightsTracker(container, context);
 
             container.RegisterInstance<StatelessServiceContext>(context);
             container.Register<CrawlingAgent>(() => new CrawlingAgent(context), Lifestyle.Singleton);
@@ -73,6 +82,8 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
 
         private static void ConfigureCoreServices(SimpleInjector.Container container)
         {
+            container.Register<FabricClient>(() => new FabricClient(), Lifestyle.Singleton);
+            container.Register<IAgentController, FabricAgentController>();
             container.Register<IAgentRegistrarService, AgentRegistrarService>();
             container.Register<IServiceBusSettings, ServiceBusSettings>();
             container.Register<IWebCrawlerQueueClient, ServiceBusQueueClient>();
@@ -109,6 +120,30 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
         private static void ConfigureGeneralApplicationConfig(SimpleInjector.Container container, StatelessServiceContext context)
         {
             container.Register<IGeneralApplicationSettings>(() => new GeneralApplicationSettings(context));
+        }
+
+        private static void ConfigureAgentProcessingQueueCreator(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+
+            string tenantId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["TenantId"].Value;
+            string clientId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ClientId"].Value;
+            string clientSecret = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ClientSecret"].Value;
+            string namespaceName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["NamespaceName"].Value;
+            string subscriptionId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["SubscriptionId"].Value;
+            string resourceGroupName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ResourceGroupName"].Value;
+
+            var serviceBusCredentials = new ServiceBusCredentials(tenantId, clientId, clientSecret, namespaceName, subscriptionId, resourceGroupName);
+            container.Register<IAgentProcessingQueueCreator>(() => new ServiceBusAgentProcessingQueueCreator(serviceBusCredentials));
+        }
+
+        private static void ConfigureApplicationInsightsTracker(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            string instrumentationKey = configurationPackage.Settings.Sections["ApplicationInsightsConfigSection"].Parameters["InstrumentationKey"].Value;
+
+            var telemetryClient = new TelemetryClient(new TelemetryConfiguration(instrumentationKey));
+            container.Register<IHttpVisitMetricTracker>(() => new ApplicationInsightsMetricTracker(telemetryClient));
         }
     }
 }

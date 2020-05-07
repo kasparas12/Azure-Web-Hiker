@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
+using Azure.Web.Hiker.Core.Common.Extensions;
 using Azure.Web.Hiker.Core.Common.Messages;
 using Azure.Web.Hiker.Core.Common.QueueClient;
-using Azure.Web.Hiker.Core.CrawlingAgent.Messages;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient.Extensions;
 
 using Microsoft.Azure.ServiceBus;
@@ -39,7 +39,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.MessageHandlers
             }
             else
             {
-                await SendRequestToCreateNewAgentForHost(frontQueueMessage.NewUrl);
+                await TryToCreateNewAgent(frontQueueMessage.NewUrl);
             }
         }
 
@@ -48,9 +48,9 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.MessageHandlers
             await _webCrawlerQueueClient.SendMessageToCrawlingAgentProcessingQueue(new AddNewURLToCrawlingAgentMessage(url), host);
         }
 
-        private async Task SendRequestToCreateNewAgentForHost(string url)
+        private async Task TryToCreateNewAgent(string url)
         {
-            await _webCrawlerQueueClient.SendMessageToCreateNewAgentQueue(new CreateNewAgentMessage(url));
+            await _agentRegistrarService.CreateNewAgentForHostName(url.GetHostOfUrl());
         }
     }
 }

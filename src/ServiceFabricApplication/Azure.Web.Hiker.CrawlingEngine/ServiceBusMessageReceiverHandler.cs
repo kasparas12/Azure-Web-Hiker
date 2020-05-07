@@ -1,10 +1,15 @@
-﻿using System.Threading;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
+using Azure.Web.Hiker.Core.Common.Extensions;
 using Azure.Web.Hiker.Core.Common.Messages;
 using Azure.Web.Hiker.Core.Common.QueueClient;
-using Azure.Web.Hiker.Core.CrawlingEngine.Services;
+using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
+using Azure.Web.Hiker.Core.CrawlingEngine.Messages;
+using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient.Extensions;
 
 using Microsoft.Azure.ServiceBus;
@@ -17,42 +22,100 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
     public class ServiceBusMessageReceiverHandler : DefaultServiceBusMessageReceiver
     {
         private readonly IAgentRegistrarService _agentRegistrarService;
-        private readonly IAgentController _agentController;
-        private readonly IAgentProcessingQueueCreator _agentProcessingQueueCreator;
+        private readonly ISeedUrlRepository _seedUrlRepository;
+        private readonly IPageIndexStorageRepository _pageIndexStorageRepository;
         private readonly IWebCrawlerQueueClient _webCrawlerQueueClient;
         public ServiceBusMessageReceiverHandler(
             IServiceBusCommunicationListener communicationListener,
             IAgentRegistrarService agentRegistrarService,
-            IAgentController agentController,
-            IAgentProcessingQueueCreator agentProcessingQueueCreator,
+            ISeedUrlRepository seedUrlRepository,
+            IPageIndexStorageRepository pageIndexStorageRepository,
             IWebCrawlerQueueClient webCrawlerQueueClient) : base(communicationListener)
         {
             _agentRegistrarService = agentRegistrarService;
-            _agentController = agentController;
-            _agentProcessingQueueCreator = agentProcessingQueueCreator;
+            _seedUrlRepository = seedUrlRepository;
+            _pageIndexStorageRepository = pageIndexStorageRepository;
             _webCrawlerQueueClient = webCrawlerQueueClient;
         }
 
         protected override async Task ReceiveMessageImplAsync(Message message, CancellationToken cancellationToken)
         {
-            var newAgentURL = message.GetDeserializedMessage<CreateNewAgentMessage>();
+            var controlAction = InvestigateControlAction(message);
 
-            if (!_agentRegistrarService.AgentExistsForGivenHostName(newAgentURL.GetHostOfPage()))
+            switch (controlAction)
             {
-                var createdEntry = _agentRegistrarService.CreateNewAgentRegistrarForHostName(newAgentURL.GetHostOfPage());
+                case ControlAction.StartCrawlProcess:
+                    await StartCrawlingProcessAsync();
+                    break;
+                case ControlAction.StopCrawlProcess:
+                    await StopCrawlingProcessAsync();
+                    break;
+                default:
+                    break;
 
-                if (createdEntry.SuccessfullyCreated)
+            }
+        }
+
+        private ControlAction InvestigateControlAction(Message message)
+        {
+            try
+            {
+                var startMessage = message.GetDeserializedMessage<StartCrawlProcessMessage>();
+
+                if (startMessage != null && startMessage.StartCrawling)
                 {
-                    await _agentProcessingQueueCreator.CreateNewProcessingQueueForAgent(newAgentURL.GetHostOfPage());
-                    await _agentController.SpawnNewAgentForHostnameAsync(createdEntry.AgentHost, createdEntry.AgentName);
-                    await _webCrawlerQueueClient.SendMessageToCrawlingAgentProcessingQueue(new AddNewURLToCrawlingAgentMessage(newAgentURL.NewUrl), newAgentURL.GetHostOfPage());
+                    return ControlAction.StartCrawlProcess;
                 }
-                else
+
+                throw new Exception();
+            }
+            catch (Exception)
+            {
+                try
                 {
-                    await Task.Delay(10000);
-                    await _webCrawlerQueueClient.SendMessageToCreateNewAgentQueue(newAgentURL);
+                    var stopMessage = message.GetDeserializedMessage<StopCrawlProcessMessage>();
+
+                    if (stopMessage != null && stopMessage.StopCrawling)
+                    {
+                        return ControlAction.StopCrawlProcess;
+                    }
+                    throw new Exception();
+                }
+                catch (Exception)
+                {
+                    return ControlAction.None;
                 }
             }
+        }
+
+        private async Task StartCrawlingProcessAsync()
+        {
+            var seedUrls = (await _seedUrlRepository.GetListOfSeedUrls()).Select(x => x.UrlAddress);
+            var unvisitedUrls = await _pageIndexStorageRepository.FilterUnvisitedLinks(seedUrls);
+
+            var unvisitedUrlMessages = unvisitedUrls.Select(x => new FrontQueueNewURLMessage(x));
+            await _webCrawlerQueueClient.SendMessagesToCrawlingFrontQueue(unvisitedUrlMessages);
+
+            var firstUnvisitedUrl = unvisitedUrls.FirstOrDefault();
+
+            if (firstUnvisitedUrl is null)
+            {
+                return;
+            }
+
+            await _agentRegistrarService.CreateNewAgentForHostName(firstUnvisitedUrl.GetHostOfUrl());
+        }
+
+        private async Task StopCrawlingProcessAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        private enum ControlAction
+        {
+            None = 0,
+            StartCrawlProcess = 1,
+            StopCrawlProcess = 2
         }
     }
 }

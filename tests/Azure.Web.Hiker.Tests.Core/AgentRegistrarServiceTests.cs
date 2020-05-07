@@ -1,3 +1,4 @@
+using Azure.Web.Hiker.Core.AgentRegistrar;
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.Settings;
@@ -13,13 +14,18 @@ namespace Azure.Web.Hiker.Tests.Core
     {
         private Mock<IAgentRegistrarRepository> _repositoryMock;
         private Mock<IGeneralApplicationSettings> _generalApplicationSettingsMock;
+        private Mock<IAgentController> _agentControllerMock;
+        private Mock<IAgentProcessingQueueCreator> _agentProcessingQueueCreatorMock;
+
         private AgentRegistrarService _service;
 
         public AgentRegistrarServiceTests()
         {
             _repositoryMock = new Mock<IAgentRegistrarRepository>();
             _generalApplicationSettingsMock = new Mock<IGeneralApplicationSettings>();
-            _service = new AgentRegistrarService(_repositoryMock.Object, _generalApplicationSettingsMock.Object);
+            _agentControllerMock = new Mock<IAgentController>();
+            _agentProcessingQueueCreatorMock = new Mock<IAgentProcessingQueueCreator>();
+            _service = new AgentRegistrarService(_repositoryMock.Object, _generalApplicationSettingsMock.Object, _agentProcessingQueueCreatorMock.Object, _agentControllerMock.Object);
         }
 
         [TestMethod]

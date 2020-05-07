@@ -24,9 +24,16 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Models
             VisitedTimestamp = visitedAt;
         }
 
+        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt, int? statusCode, string disallowedReason) : this(url, hitcount, visited, visitedAt)
+        {
+            StatusCode = statusCode;
+            DisallowedCrawlReason = disallowedReason;
+        }
         public string PageUrl { get; set; }
         public int HitCount { get; set; }
         public bool Visited { get; set; }
         public DateTime? VisitedTimestamp { get; set; }
+        public int? StatusCode { get; set; }
+        public string DisallowedCrawlReason { get; set; }
     }
 }

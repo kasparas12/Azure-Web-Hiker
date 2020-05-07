@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Core.IndexStorage.Models;
 
@@ -8,5 +9,6 @@ namespace Azure.Web.Hiker.Core.IndexStorage.Interfaces
     {
         Task InsertOrMergeNewPageIndex(IPageIndex entity);
         Task<IPageIndex> GetPageIndexByUrl(string url);
+        Task<IEnumerable<string>> FilterUnvisitedLinks(IEnumerable<string> urls);
     }
 }

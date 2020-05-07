@@ -6,9 +6,9 @@
     <Parameter Name="AgentRegistrarDatabaseConnectionString" Value="" />
     <Parameter Name="DnsServerIpAddress" Value="8.8.8.8" />
     <Parameter Name="DnsRequestsRetryCount" Value="3" />
-    <Parameter Name="DnsRequestTimeoutValue" Value="" />
+    <Parameter Name="DnsRequestTimeoutValue" Value="1000" />
     <Parameter Name="ServiceBusConnectionString" Value="" />
-    <Parameter Name="CreateAgentQueue" Value="create-agent-queue" />
+    <Parameter Name="CWCEControlQueue" Value="cwce-control-queue" />
     <Parameter Name="CrawlingFrontQueueName" Value="crawling-front-queue" />
     <Parameter Name="TenantId" Value="" />
     <Parameter Name="ClientId" Value="" />
@@ -18,5 +18,6 @@
     <Parameter Name="SubscriptionId" Value="" />
     <Parameter Name="StorageConnectionString" Value="" />
     <Parameter Name="MaxAgentsValue" Value="" />
+    <Parameter Name="InstrumentationKey" Value="" />
   </Parameters>
 </Application>

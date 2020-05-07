@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Azure.Web.Hiker.Core.CrawlingEngine.Services;
+using Azure.Web.Hiker.Core.AgentRegistrar;
 
 using Microsoft.Azure.Management.ServiceBus;
 using Microsoft.Azure.Management.ServiceBus.Models;

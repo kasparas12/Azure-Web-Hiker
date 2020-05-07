@@ -1,7 +1,6 @@
-﻿using Azure.Web.Hiker.Core.Common.Messages;
-using Azure.Web.Hiker.Core.Common.QueueClient;
+﻿using Azure.Web.Hiker.Core.Common.QueueClient;
 
-namespace Azure.Web.Hiker.Core.CrawlingAgent.Messages
+namespace Azure.Web.Hiker.Core.Common.Messages
 {
     public class FrontQueueNewURLMessage : CommonNewUrlMessage, IBaseMessage
     {

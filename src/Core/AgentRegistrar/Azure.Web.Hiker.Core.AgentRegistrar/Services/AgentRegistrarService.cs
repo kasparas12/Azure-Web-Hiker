@@ -1,4 +1,7 @@
 ﻿
+using System.Threading.Tasks;
+
+using Azure.Web.Hiker.Core.AgentRegistrar.Exceptions;
 using Azure.Web.Hiker.Core.AgentRegistrar.Models;
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.Common.Settings;
@@ -9,18 +12,26 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Services
     {
         bool AgentExistsForGivenHostName(string hostName);
 
-        IAgentRegistrarEntry CreateNewAgentRegistrarForHostName(string hostname);
+        Task<IAgentRegistrarEntry> CreateNewAgentForHostName(string hostname);
     }
 
     public class AgentRegistrarService : IAgentRegistrarService
     {
         private readonly IAgentRegistrarRepository _repository;
+        private readonly IAgentProcessingQueueCreator _agentProcessingQueueCreator;
         private readonly IGeneralApplicationSettings _generalApplicationSettings;
+        private readonly IAgentController _agentController;
 
-        public AgentRegistrarService(IAgentRegistrarRepository repository, IGeneralApplicationSettings generalApplicationSettings)
+        public AgentRegistrarService(
+            IAgentRegistrarRepository repository,
+            IGeneralApplicationSettings generalApplicationSettings,
+            IAgentProcessingQueueCreator agentProcessingQueueCreator,
+            IAgentController agentController)
         {
             _repository = repository;
             _generalApplicationSettings = generalApplicationSettings;
+            _agentProcessingQueueCreator = agentProcessingQueueCreator;
+            _agentController = agentController;
         }
 
         public bool AgentExistsForGivenHostName(string hostName)
@@ -28,14 +39,15 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Services
             return _repository.AgentForSpecificHostExists(hostName);
         }
 
-        public IAgentRegistrarEntry CreateNewAgentRegistrarForHostName(string hostname)
+        public async Task<IAgentRegistrarEntry> CreateNewAgentForHostName(string hostname)
         {
             var numberOfActiveAgents = _repository.GetNumberOfActiveAgents();
             var maxAgentsSetting = _generalApplicationSettings.MaxNumberOfAgents;
 
             if (numberOfActiveAgents >= maxAgentsSetting)
             {
-                return new AgentRegistrarEntry { SuccessfullyCreated = false };
+                await Task.Delay(10000);
+                throw new MaxAgentsRegisteredException("Max Number of Agents Already Registered");
             }
 
             var newAgentNumber = _repository.GetNextAgentCounterNumber();
@@ -43,7 +55,8 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Services
 
             _repository.InsertNewAgent(newEntry);
 
-            newEntry.SuccessfullyCreated = true;
+            await _agentProcessingQueueCreator.CreateNewProcessingQueueForAgent(newEntry.AgentHost);
+            await _agentController.SpawnNewAgentForHostnameAsync(newEntry.AgentHost, newEntry.AgentName);
 
             return newEntry;
         }

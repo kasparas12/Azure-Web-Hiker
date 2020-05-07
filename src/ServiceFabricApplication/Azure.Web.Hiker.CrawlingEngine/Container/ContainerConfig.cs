@@ -1,11 +1,16 @@
 ﻿using System.Fabric;
 
+using Azure.Web.Hiker.Core.AgentRegistrar;
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.Common.Settings;
-using Azure.Web.Hiker.Core.CrawlingEngine.Services;
+using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
+using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
+using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable;
+using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config;
 using Azure.Web.Hiker.Infrastructure.Persistence.Dapper;
+using Azure.Web.Hiker.Infrastructure.Persistence.Dapper.Dapper;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 using Azure.Web.Hiker.Infrastructure.ServiceFabric;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
@@ -40,8 +45,12 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             string connectionString = configurationPackage.Settings.Sections["AgentRegistrarDatabaseSection"].Parameters["ConnectionString"].Value;
+            string storageAccountConnectionString = configurationPackage.Settings.Sections["StorageAccountConfigSection"].Parameters["StorageConnectionString"].Value;
 
+            var cloudTable = PageIndexCloudTable.SetupPageIndexCloudTable(storageAccountConnectionString).GetAwaiter().GetResult();
             container.Register<IAgentRegistrarRepository>(() => new DapperAgentRegistrarRepository(connectionString));
+            container.Register<ISeedUrlRepository>(() => new DapperSeedUrlRepository(connectionString));
+            container.Register<IPageIndexStorageRepository>(() => new PageIndexStorageRepository(cloudTable), Lifestyle.Transient);
         }
         private static void ConfigureCoreServices(SimpleInjector.Container container)
         {
@@ -55,11 +64,11 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
         private static void ConfigureServiceBusListener(StatelessServiceContext context, SimpleInjector.Container container)
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
-            string serviceBusQueueName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["CreateAgentQueue"].Value;
+            string serviceBusQueueName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["CWCEControlQueue"].Value;
             string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
 
             container.Register<ServiceBusQueueCommunicationListener>(() => new ServiceBusQueueCommunicationListener(
-                cl => new ServiceBusMessageReceiverHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<IAgentController>(), container.GetInstance<IAgentProcessingQueueCreator>(), container.GetInstance<IWebCrawlerQueueClient>()), context, serviceBusQueueName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+                cl => new ServiceBusMessageReceiverHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<ISeedUrlRepository>(), container.GetInstance<IPageIndexStorageRepository>(), container.GetInstance<IWebCrawlerQueueClient>()), context, serviceBusQueueName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
         }
 
         private static void ConfigureAgentProcessingQueueCreator(SimpleInjector.Container container, StatelessServiceContext context)

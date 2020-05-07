@@ -5,8 +5,8 @@ using System.Fabric.Description;
 using System.Text;
 using System.Threading.Tasks;
 
+using Azure.Web.Hiker.Core.AgentRegistrar;
 using Azure.Web.Hiker.Core.CrawlingAgent.Models;
-using Azure.Web.Hiker.Core.CrawlingEngine.Services;
 
 using Newtonsoft.Json;
 

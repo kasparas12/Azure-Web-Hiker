@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Core.Common.Extensions;
@@ -18,6 +19,23 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable
         public PageIndexStorageRepository(CloudTable cloudTable)
         {
             _cloudTable = cloudTable;
+        }
+
+        public async Task<IEnumerable<string>> FilterUnvisitedLinks(IEnumerable<string> urls)
+        {
+            var filteredListOfUnvisitedLinks = new List<string>();
+
+            foreach (var url in urls)
+            {
+                var pageIndex = await GetPageIndexByUrl(url);
+
+                if (pageIndex == null || !pageIndex.Visited)
+                {
+                    filteredListOfUnvisitedLinks.Add(url);
+                }
+            }
+
+            return filteredListOfUnvisitedLinks;
         }
 
         public async Task<IPageIndex> GetPageIndexByUrl(string url)
@@ -43,7 +61,7 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable
                 throw new ArgumentNullException("entity cannot be null");
             }
 
-            var index = new PageIndex(entity.PageUrl, entity.HitCount, entity.Visited, entity.VisitedTimestamp);
+            var index = new PageIndex(entity.PageUrl, entity.HitCount, entity.Visited, entity.VisitedTimestamp, entity.StatusCode, entity.DisallowedCrawlReason);
             index.PartitionKey = entity.PageUrl.GetHostOfUrl();
             index.RowKey = entity.PageUrl.CalculateMD5HashOfUrl();
 

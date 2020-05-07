@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Core.Common.Messages;
 using Azure.Web.Hiker.Core.Common.QueueClient;
-using Azure.Web.Hiker.Core.CrawlingAgent.Messages;
+using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.Core.IndexStorage.Models;
 
@@ -40,8 +40,20 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
 
             return false;
         }
+        public async Task<bool> IsPageExistingInIndex(string url)
+        {
+            var pageIndex = await _pageIndexStorageRepository.GetPageIndexByUrl(url);
 
-        public async Task MarkPageAsVisitedAsync(string url)
+            if (pageIndex is null)
+            {
+                await _pageIndexStorageRepository.InsertOrMergeNewPageIndex(new PageIndex(url, 0, false, null));
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task MarkPageAsVisitedAsync(string url, IPageCrawlResult crawlResult)
         {
             var pageIndex = await _pageIndexStorageRepository.GetPageIndexByUrl(url);
 
@@ -49,6 +61,8 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
             {
                 pageIndex.Visited = true;
                 pageIndex.VisitedTimestamp = DateTime.UtcNow;
+                pageIndex.StatusCode = Convert.ToInt32(crawlResult.StatusCode);
+                pageIndex.DisallowedCrawlReason = crawlResult.DisallowedCrawlingMessage;
 
                 await _pageIndexStorageRepository.InsertOrMergeNewPageIndex(pageIndex);
             }
@@ -67,7 +81,12 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
             {
                 if (link.Host != crawlerHost)
                 {
-                    await SendExternalLinkToFrontQueueAsync(link);
+                    if (!await IsPageExistingInIndex(link.AbsoluteUri))
+                    {
+                        await SendExternalLinkToFrontQueueAsync(link);
+                        continue;
+                    }
+
                     continue;
                 }
 
@@ -79,8 +98,11 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
                 }
                 else
                 {
-                    await _webCrawlerQueueClient.SendScheduledMessageToCrawlingAgentProcessingQueue(new AddNewURLToCrawlingAgentMessage(link.AbsoluteUri), link.Host, DateTime.UtcNow.AddSeconds(5 * (index + 1)));
-                    await UpdateIndexHitCount(link, hitCount);
+                    if (!await IsPageExistingInIndex(link.AbsoluteUri))
+                    {
+                        await _webCrawlerQueueClient.SendScheduledMessageToCrawlingAgentProcessingQueue(new AddNewURLToCrawlingAgentMessage(link.AbsoluteUri), link.Host, DateTime.UtcNow.AddSeconds(5 * (index + 1)));
+                        await UpdateIndexHitCount(link, hitCount);
+                    }
                 }
 
                 index++;

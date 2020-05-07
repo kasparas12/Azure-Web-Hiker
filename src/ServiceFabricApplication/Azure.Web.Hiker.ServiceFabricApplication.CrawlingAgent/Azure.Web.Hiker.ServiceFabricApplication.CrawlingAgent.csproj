@@ -29,10 +29,12 @@
     <ProjectReference Include="..\..\Core\DNSResolver\UbietyResolver\Azure.Web.Hiker.Core.DNSResolver.UbietyResolver.csproj" />
     <ProjectReference Include="..\..\Core\IndexStorage\Azure.Web.Hiker.Core.IndexStorage\Azure.Web.Hiker.Core.CrawlingAgent.IndexStorage.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Azure.Web.Hiker.Infrastructure.Abot2Crawler\Azure.Web.Hiker.Infrastructure.Abot2Crawler.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker\Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker.csproj" />
     <ProjectReference Include="..\..\Infrastructure\AzureServiceBusCommunication\Azure.Web.Hiker.Infrastructure.ServiceBusClient\Azure.Web.Hiker.Infrastructure.ServiceBusClient.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.Dapper\Azure.Web.Hiker.Infrastructure.Persistence.Dapper.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ServiceFabric\Azure.Web.Hiker.Infrastructure.ServiceFabric\Azure.Web.Hiker.Infrastructure.ServiceFabric.csproj" />
+    <ProjectReference Include="..\Azure.Web.Hiker.CrawlingEngine\Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.csproj" />
   </ItemGroup>
 
 </Project>
