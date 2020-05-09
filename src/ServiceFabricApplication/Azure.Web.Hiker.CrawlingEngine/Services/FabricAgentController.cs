@@ -39,12 +39,19 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services
             };
 
             serviceDescriptions.Add(statelessServiceDescription);
-
             // Further below we create the instances of the service.
             foreach (var serivceDescription in serviceDescriptions)
             {
                 await _fabricClient.ServiceManager.CreateServiceAsync(serivceDescription);
             }
+        }
+
+        public async Task DeleteAgentForHostnameAsync(string serviceName)
+        {
+            var agentUri = new Uri($"{_statelessServiceContext.CodePackageActivationContext.ApplicationName}/{serviceName}");
+            var deleteDescription = new DeleteServiceDescription(agentUri) { ForceDelete = true };
+
+            await _fabricClient.ServiceManager.DeleteServiceAsync(deleteDescription);
         }
     }
 }

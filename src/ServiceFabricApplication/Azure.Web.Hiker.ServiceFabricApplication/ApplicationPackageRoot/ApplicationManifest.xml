@@ -9,7 +9,7 @@
     <Parameter Name="DnsServerIpAddress" DefaultValue="" />
     <Parameter Name="DnsRequestsRetryCount" DefaultValue="" />
     <Parameter Name="DnsRequestTimeoutValue" DefaultValue="" />
-    <Parameter Name="CrawlingFrontQueueName" DefaultValue="" />
+    <Parameter Name="AgentCreateQueue" DefaultValue="" />
     <Parameter Name="CWCEControlQueue" DefaultValue="" />
     <Parameter Name="TenantId" DefaultValue="" />
     <Parameter Name="ClientId" DefaultValue="" />
@@ -19,6 +19,7 @@
     <Parameter Name="SubscriptionId" DefaultValue="" />
     <Parameter Name="StorageConnectionString" DefaultValue="" />
     <Parameter Name="MaxAgentsValue" DefaultValue="" />
+    <Parameter Name="AgentInactivityTimeoutValue" DefaultValue="" />
     <Parameter Name="InstrumentationKey" DefaultValue="" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
@@ -35,7 +36,7 @@
             <Parameter Name="DnsRequestTimeoutValue" Value="[DnsRequestTimeoutValue]" />
           </Section>
           <Section Name="ServiceBusConfigSection">
-            <Parameter Name="CrawlingFrontQueueName" Value="[CrawlingFrontQueueName]" />
+            <Parameter Name="AgentCreateQueue" Value="[AgentCreateQueue]" />
             <Parameter Name="ServiceBusConnectionString" Value="[ServiceBusConnectionString]" />
             <Parameter Name="CWCEControlQueue" Value="[CWCEControlQueue]" />
             <Parameter Name="TenantId" Value="[TenantId]" />
@@ -53,6 +54,7 @@
           </Section>
           <Section Name="GeneralApplicationConfigSection">
             <Parameter Name="MaxAgentsValue" Value="[MaxAgentsValue]" />
+            <Parameter Name="AgentInactivityTimeoutValue" Value="[AgentInactivityTimeoutValue]" />
           </Section>
           <Section Name="ApplicationInsightsConfigSection">
             <Parameter Name="InstrumentationKey" Value="[InstrumentationKey]" />
@@ -67,7 +69,7 @@
       <ConfigOverride Name="Config">
         <Settings>
           <Section Name="ServiceBusConfigSection">
-            <Parameter Name="CrawlingFrontQueueName" Value="[CrawlingFrontQueueName]" />
+            <Parameter Name="AgentCreateQueue" Value="[AgentCreateQueue]" />
             <Parameter Name="CWCEControlQueue" Value="[CWCEControlQueue]" />
             <Parameter Name="ServiceBusConnectionString" Value="[ServiceBusConnectionString]" />
             <Parameter Name="TenantId" Value="[TenantId]" />
@@ -82,6 +84,7 @@
           </Section>
           <Section Name="GeneralApplicationConfigSection">
             <Parameter Name="MaxAgentsValue" Value="[MaxAgentsValue]" />
+            <Parameter Name="AgentInactivityTimeoutValue" Value="[AgentInactivityTimeoutValue]" />
           </Section>
           <Section Name="StorageAccountConfigSection">
             <Parameter Name="StorageConnectionString" Value="[StorageConnectionString]" />

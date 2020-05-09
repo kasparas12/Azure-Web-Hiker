@@ -1,4 +1,7 @@
-﻿using Azure.Web.Hiker.Core.AgentRegistrar.Models;
+﻿using System;
+using System.Collections.Generic;
+
+using Azure.Web.Hiker.Core.AgentRegistrar.Models;
 
 namespace Azure.Web.Hiker.Core.AgentRegistrar.Persistence
 {
@@ -7,8 +10,10 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Persistence
         bool AgentForSpecificHostExists(string hostname);
         IAgentRegistrarEntry GetAgentForSpecificHost(string hostname);
         void InsertNewAgent(IAgentRegistrarEntry newEntry);
-        void DeleteAgent(int agentId);
+        void DeleteAgentEntry(string hostname);
         int GetNextAgentCounterNumber();
         int GetNumberOfActiveAgents();
+        IEnumerable<(string, string)> GetHostsForWhichAgentsAreFree(DateTime timeoutDate);
+        void UpdateAgentActivityTime(string hostName, DateTime lastActivity);
     }
 }

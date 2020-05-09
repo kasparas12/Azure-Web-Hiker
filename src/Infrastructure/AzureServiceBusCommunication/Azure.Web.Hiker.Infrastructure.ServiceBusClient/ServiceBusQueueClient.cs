@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-using Azure.Web.Hiker.Core.Common.Messages;
 using Azure.Web.Hiker.Core.Common.QueueClient;
-using Azure.Web.Hiker.Infrastructure.ServiceBusClient.Extensions;
 
 using Microsoft.Azure.ServiceBus;
-using Microsoft.Azure.ServiceBus.Core;
+using Microsoft.Azure.ServiceBus.Management;
 
 using Newtonsoft.Json;
 
@@ -17,45 +15,25 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
     public class ServiceBusQueueClient : IWebCrawlerQueueClient
     {
         private readonly IServiceBusSettings _serviceBusSettings;
-        public ServiceBusQueueClient(IServiceBusSettings serviceBusSettings)
+        private readonly ServiceBusConnection _serviceBusConnection;
+        private readonly ManagementClient _managementClient;
+
+        public ServiceBusQueueClient(IServiceBusSettings serviceBusSettings, ServiceBusConnection serviceBusConnection, ManagementClient managementClient)
         {
             _serviceBusSettings = serviceBusSettings;
+            _serviceBusConnection = serviceBusConnection;
+            _managementClient = managementClient;
         }
 
-        public async Task<int> GetNumberOfSameLinkMessagesInCrawlingAgentProcessingQueue<T>(Uri url) where T : AddNewURLToCrawlingAgentMessage
+        public async Task<long> GetMessageCountInCrawlerQueue(string hostName)
         {
-            int hitcount = 0;
-            var messageReceiver = new MessageReceiver(_serviceBusSettings.ServiceBusConnectionString, url.Host);
-
-            List<T> listOfUrlsInCrawlerQueue = new List<T>();
-            int fetchedUrls = 0;
-
-            do
-            {
-                var listOfUrlsInQueue = await messageReceiver.PeekAsync(20);
-                fetchedUrls = listOfUrlsInCrawlerQueue.Count;
-
-                foreach (var urlInQueue in listOfUrlsInQueue)
-                {
-                    listOfUrlsInCrawlerQueue.Add(urlInQueue.GetDeserializedMessage<T>());
-                }
-
-            } while (fetchedUrls > 0);
-
-            foreach (var fetchedUrl in listOfUrlsInCrawlerQueue)
-            {
-                if (fetchedUrl.NewUrl == url.AbsoluteUri)
-                {
-                    hitcount++;
-                }
-            }
-
-            return hitcount;
+            var queueInfo = await _managementClient.GetQueueRuntimeInfoAsync(hostName);
+            return queueInfo.MessageCount;
         }
 
         public async Task SendMessage<T>(T message, string queueName) where T : IBaseMessage
         {
-            var queueClient = new QueueClient(_serviceBusSettings.ServiceBusConnectionString, queueName);
+            var queueClient = new QueueClient(_serviceBusConnection, queueName, ReceiveMode.PeekLock, null);
             var serializedObject = JsonConvert.SerializeObject(message);
 
             await queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(serializedObject)));
@@ -63,7 +41,7 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
 
         public async Task SendMessages<T>(IEnumerable<T> messages, string queueName) where T : IBaseMessage
         {
-            var queueClient = new QueueClient(_serviceBusSettings.ServiceBusConnectionString, queueName);
+            var queueClient = new QueueClient(_serviceBusConnection, queueName, ReceiveMode.PeekLock, null);
 
             foreach (var msg in messages)
             {
@@ -72,9 +50,19 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
             }
         }
 
-        public async Task SendMessagesToCrawlingFrontQueue<T>(IEnumerable<T> messages) where T : IBaseMessage
+        public async Task SendMessagesToAgentCreateQueue<T>(IEnumerable<T> messages) where T : IBaseMessage
         {
-            await SendMessages(messages, _serviceBusSettings.CrawlingFrontQueueName);
+            await SendMessages(messages, _serviceBusSettings.AgentCreateQueue);
+        }
+
+        public async Task SendMessagesToCrawlingAgentProcessingQueue<T>(IEnumerable<T> messages, string hostName) where T : IBaseMessage
+        {
+            await SendMessages(messages, hostName);
+        }
+
+        public async Task SendMessageToAgentCreateQueue<T>(T message) where T : IBaseMessage
+        {
+            await SendMessage(message, _serviceBusSettings.AgentCreateQueue);
         }
 
         public async Task SendMessageToCrawlingAgentProcessingQueue<T>(T message, string hostName) where T : IBaseMessage
@@ -82,15 +70,9 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
             await SendMessage(message, hostName);
         }
 
-        public async Task SendMessageToCrawlingFrontQueue<T>(T message) where T : IBaseMessage
-        {
-            await SendMessage(message, _serviceBusSettings.CrawlingFrontQueueName);
-        }
-
-
         public async Task SendScheduledMessageToCrawlingAgentProcessingQueue<T>(T message, string hostName, DateTime scheduledTime) where T : IBaseMessage
         {
-            var queueClient = new QueueClient(_serviceBusSettings.ServiceBusConnectionString, hostName);
+            var queueClient = new QueueClient(_serviceBusConnection, hostName, ReceiveMode.PeekLock, null);
             var serializedObject = JsonConvert.SerializeObject(message);
 
             await queueClient.ScheduleMessageAsync(new Message(Encoding.UTF8.GetBytes(serializedObject)), scheduledTime);

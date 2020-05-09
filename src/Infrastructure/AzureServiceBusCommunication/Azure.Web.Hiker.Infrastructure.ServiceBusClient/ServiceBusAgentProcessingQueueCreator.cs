@@ -116,5 +116,30 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
             return _token;
 
         }
+
+        public async Task DeleteProcessingQueueForAgent(string agentHostName)
+        {
+            if (string.IsNullOrEmpty(_serviceBusCredentials.NamespaceName))
+            {
+                throw new Exception("Namespace name is empty!");
+            }
+
+            var token = await ObtainToken();
+
+            var creds = new TokenCredentials(token);
+            var sbClient = new ServiceBusManagementClient(creds)
+            {
+                SubscriptionId = _serviceBusCredentials.SubscriptionId,
+            };
+
+            try
+            {
+                await sbClient.Queues.DeleteAsync(_serviceBusCredentials.ResourceGroupName, _serviceBusCredentials.NamespaceName, agentHostName);
+            }
+            catch (Exception e)
+            {
+                var b = e;
+            }
+        }
     }
 }

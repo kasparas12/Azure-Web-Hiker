@@ -16,6 +16,6 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler
 
     public interface IPageCrawler
     {
-        Task<IPageCrawlResult> CrawlGivenWebPageAsync(string pageUrl);
+        Task CrawlGivenWebPageAsync(string pageUrl);
     }
 }

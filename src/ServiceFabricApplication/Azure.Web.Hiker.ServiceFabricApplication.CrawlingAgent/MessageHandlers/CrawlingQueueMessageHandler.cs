@@ -38,10 +38,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.MessageHandlers
 
             if (await _pageIndexer.IsPageUnvisitedAsync(pageToQueueMessage.NewUrl))
             {
-                var crawlResult = await _pageCrawler.CrawlGivenWebPageAsync(pageToQueueMessage.NewUrl);
-
-                await _pageIndexer.ProcessCrawledLinksAsync(crawlResult.PageLinks, _crawlingAgentHost.AssignedHostName);
-                await _pageIndexer.MarkPageAsVisitedAsync(pageToQueueMessage.NewUrl, crawlResult);
+                await _pageCrawler.CrawlGivenWebPageAsync(pageToQueueMessage.NewUrl);
             }
         }
     }

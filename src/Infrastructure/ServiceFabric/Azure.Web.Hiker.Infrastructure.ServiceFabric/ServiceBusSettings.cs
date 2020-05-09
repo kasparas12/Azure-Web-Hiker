@@ -20,7 +20,7 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
 
         public string ServiceBusConnectionString { get; set; }
 
-        public string CrawlingFrontQueueName { get; set; }
+        public string AgentCreateQueue { get; set; }
 
         public string CWCEControlQueue { get; set; }
 
@@ -30,7 +30,7 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
             var generalSectionParams = settings.Sections["ServiceBusConfigSection"].Parameters;
 
             ServiceBusConnectionString = generalSectionParams["ServiceBusConnectionString"].Value;
-            CrawlingFrontQueueName = generalSectionParams["CrawlingFrontQueueName"].Value;
+            AgentCreateQueue = generalSectionParams["AgentCreateQueue"].Value;
             CWCEControlQueue = generalSectionParams["CWCEControlQueue"].Value;
         }
     }

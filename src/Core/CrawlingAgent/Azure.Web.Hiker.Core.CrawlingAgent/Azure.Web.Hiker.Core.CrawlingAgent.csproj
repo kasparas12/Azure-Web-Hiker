@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar.csproj" />
     <ProjectReference Include="..\..\Common\Azure.Web.Hiker.Core.Common\Azure.Web.Hiker.Core.Common.csproj" />
     <ProjectReference Include="..\..\IndexStorage\Azure.Web.Hiker.Core.IndexStorage\Azure.Web.Hiker.Core.CrawlingAgent.IndexStorage.csproj" />
   </ItemGroup>

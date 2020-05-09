@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace Azure.Web.Hiker.Core.Common.Extensions
@@ -27,6 +28,11 @@ namespace Azure.Web.Hiker.Core.Common.Extensions
                 }
                 return sb.ToString();
             }
+        }
+
+        public static bool ContainsAny(this string haystack, string[] needles)
+        {
+            return needles.Any(haystack.Contains);
         }
     }
 }

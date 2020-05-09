@@ -5,6 +5,8 @@ using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.Common.Settings;
+using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
+using Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer;
 using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable;
@@ -13,10 +15,12 @@ using Azure.Web.Hiker.Infrastructure.Persistence.Dapper;
 using Azure.Web.Hiker.Infrastructure.Persistence.Dapper.Dapper;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 using Azure.Web.Hiker.Infrastructure.ServiceFabric;
+using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandlers;
+using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandlers.Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandlers;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
 
-using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
-
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Management;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 
@@ -30,13 +34,17 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             container.RegisterInstance<StatelessServiceContext>(context);
-            container.Register<CrawlingEngine>(() => new CrawlingEngine(context), Lifestyle.Singleton);
+
+            ConfigureAgentCreateCommunicationListener(context, container);
+            container.Register<CrawlingEngine>(() => new CrawlingEngine(context, container.GetInstance<IAzureServiceBusCommunicationListener>()), Lifestyle.Singleton);
 
             ConfigureRepositories(container, context);
+            ConfigureServiceBusQueueClient(container, context);
             ConfigureCoreServices(container);
             ConfigureGeneralApplicationConfig(container, context);
             ConfigureAgentProcessingQueueCreator(container, context);
-            ConfigureServiceBusListener(context, container);
+            ConfigureCrawlingProcessServiceBusListener(context, container);
+
 
             return container;
         }
@@ -57,18 +65,36 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container
             container.Register<IAgentRegistrarService, AgentRegistrarService>();
             container.Register<FabricClient>(() => new FabricClient(), Lifestyle.Singleton);
             container.Register<IAgentController, FabricAgentController>();
+            container.Register<IPageIndexer, PageIndexer>();
             container.Register<IServiceBusSettings, ServiceBusSettings>();
-            container.Register<IWebCrawlerQueueClient, ServiceBusQueueClient>();
+            container.Collection.Register<IPageLinksFilter>(typeof(AvoidPopularSitesFilter));
         }
 
-        private static void ConfigureServiceBusListener(StatelessServiceContext context, SimpleInjector.Container container)
+        private static void ConfigureServiceBusQueueClient(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
+
+            container.Register<ServiceBusConnection>(() => new ServiceBusConnection(serviceBusConnectionString), Lifestyle.Singleton);
+            container.Register<ManagementClient>(() => new ManagementClient(serviceBusConnectionString), Lifestyle.Singleton);
+            container.Register<IWebCrawlerQueueClient, ServiceBusQueueClient>();
+
+        }
+
+        private static void ConfigureCrawlingProcessServiceBusListener(StatelessServiceContext context, SimpleInjector.Container container)
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             string serviceBusQueueName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["CWCEControlQueue"].Value;
             string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
 
-            container.Register<ServiceBusQueueCommunicationListener>(() => new ServiceBusQueueCommunicationListener(
-                cl => new ServiceBusMessageReceiverHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<ISeedUrlRepository>(), container.GetInstance<IPageIndexStorageRepository>(), container.GetInstance<IWebCrawlerQueueClient>()), context, serviceBusQueueName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+            container.Register<CrawlingProcessControlCommunicationListener>(() => new CrawlingProcessControlCommunicationListener(
+                cl => new CrawlingProcessControlServiceBusMessageReceiverHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<ISeedUrlRepository>(), container.GetInstance<IPageIndexStorageRepository>(), container.GetInstance<IWebCrawlerQueueClient>()), context, serviceBusQueueName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+        }
+
+        private static void ConfigureAgentCreateCommunicationListener(StatelessServiceContext context, SimpleInjector.Container container)
+        {
+            container.Register<IMessageHandler, AgentCreateMessageHandler>();
+            container.Register<IAzureServiceBusCommunicationListener, ServiceBusCommunicationListener>();
         }
 
         private static void ConfigureAgentProcessingQueueCreator(SimpleInjector.Container container, StatelessServiceContext context)

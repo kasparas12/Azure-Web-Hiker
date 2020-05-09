@@ -33,13 +33,14 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler.Models
                 HTMLContent = crawledPage.Content.Text;
                 ElapsedMilliseconds = crawledPage.Elapsed;
             }
-        } 
+        }
 
-        public AbotCrawlResult(HttpStatusCode statusCode, double elapsedMilliseconds)
+        public AbotCrawlResult(HttpStatusCode statusCode, double elapsed)
         {
             StatusCode = statusCode;
-            ElapsedMilliseconds = elapsedMilliseconds;
+            ElapsedMilliseconds = elapsed;
         }
+
         public string DisallowedCrawlingMessage { get; set; }
 
         public HttpStatusCode? StatusCode { get; set; }

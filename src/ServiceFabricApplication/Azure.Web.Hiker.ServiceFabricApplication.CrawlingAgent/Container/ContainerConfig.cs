@@ -26,6 +26,8 @@ using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
 
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Management;
 
 using Newtonsoft.Json;
 
@@ -44,10 +46,10 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             ConfigureSettings(container, context);
             ConfigureDnsResolver(container);
             ConfigureRepositories(container, context);
+            ConfigureServiceBusQueueClient(container, context);
             ConfigureCoreServices(container);
             ConfigureGeneralApplicationConfig(container, context);
             ConfigureCrawlingHostData(context, container);
-            ConfigureServiceBusFrontQueueListener(context, container);
             ConfigureServiceBusCrawlingQueueListener(context, container);
             ConfigureAgentProcessingQueueCreator(container, context);
             ConfigureApplicationInsightsTracker(container, context);
@@ -86,18 +88,20 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             container.Register<IAgentController, FabricAgentController>();
             container.Register<IAgentRegistrarService, AgentRegistrarService>();
             container.Register<IServiceBusSettings, ServiceBusSettings>();
-            container.Register<IWebCrawlerQueueClient, ServiceBusQueueClient>();
             container.Register<IPageIndexer, PageIndexer>();
             container.Register<IPageCrawler, AbotWebCrawler>();
+            container.Collection.Register<IPageLinksFilter>(typeof(AvoidPopularSitesFilter));
         }
-        private static void ConfigureServiceBusFrontQueueListener(StatelessServiceContext context, SimpleInjector.Container container)
+
+        private static void ConfigureServiceBusQueueClient(SimpleInjector.Container container, StatelessServiceContext context)
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
-            string serviceBusQueueName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["CrawlingFrontQueueName"].Value;
             string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
 
-            container.Register<FrontQueueCommunicationListener>(() => new FrontQueueCommunicationListener(
-                cl => new FrontQueueMessageHandler(cl, container.GetInstance<IAgentRegistrarService>(), container.GetInstance<IWebCrawlerQueueClient>()), context, serviceBusQueueName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+            container.Register<ServiceBusConnection>(() => new ServiceBusConnection(serviceBusConnectionString), Lifestyle.Singleton);
+
+            container.Register<ManagementClient>(() => new ManagementClient(serviceBusConnectionString), Lifestyle.Singleton);
+            container.Register<IWebCrawlerQueueClient, ServiceBusQueueClient>();
         }
 
         private static void ConfigureServiceBusCrawlingQueueListener(StatelessServiceContext context, SimpleInjector.Container container)

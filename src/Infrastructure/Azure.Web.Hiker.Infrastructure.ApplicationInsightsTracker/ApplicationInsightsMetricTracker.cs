@@ -25,5 +25,10 @@ namespace Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker
         {
             _telemetryClient.TrackEvent("Disallowed website visit", new Dictionary<string, string> { { "Link", url.AbsoluteUri }, { "Disallowed reason", reason } });
         }
+
+        public void TrackVisitTimeout(Uri url)
+        {
+            _telemetryClient.TrackEvent("Timeout for website", new Dictionary<string, string> { { "Link", url.AbsoluteUri } });
+        }
     }
 }

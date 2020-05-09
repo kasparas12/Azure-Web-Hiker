@@ -3,11 +3,12 @@
   <!-- Add your custom configuration sections and parameters here -->
   <Section Name="GeneralApplicationConfigSection">
     <Parameter Name="MaxAgentsValue" Value="" />
+    <Parameter Name="AgentInactivityTimeoutValue" Value="" />
   </Section>
   <Section Name="ServiceBusConfigSection">
     
     <Parameter Name="CWCEControlQueue" Value="" />
-    <Parameter Name="CrawlingFrontQueueName" Value=""/>
+    <Parameter Name="AgentCreateQueue" Value=""/>
     <Parameter Name="ServiceBusConnectionString" Value="" />
 
     <Parameter Name="TenantId" Value="" />

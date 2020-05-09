@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
-using Azure.Web.Hiker.Core.Common.Extensions;
 using Azure.Web.Hiker.Core.Common.Messages;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
@@ -17,15 +16,15 @@ using Microsoft.Azure.ServiceBus;
 using ServiceFabric.ServiceBus.Services.Netstd;
 using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
 
-namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
+namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandlers
 {
-    public class ServiceBusMessageReceiverHandler : DefaultServiceBusMessageReceiver
+    public class CrawlingProcessControlServiceBusMessageReceiverHandler : DefaultServiceBusMessageReceiver
     {
         private readonly IAgentRegistrarService _agentRegistrarService;
         private readonly ISeedUrlRepository _seedUrlRepository;
         private readonly IPageIndexStorageRepository _pageIndexStorageRepository;
         private readonly IWebCrawlerQueueClient _webCrawlerQueueClient;
-        public ServiceBusMessageReceiverHandler(
+        public CrawlingProcessControlServiceBusMessageReceiverHandler(
             IServiceBusCommunicationListener communicationListener,
             IAgentRegistrarService agentRegistrarService,
             ISeedUrlRepository seedUrlRepository,
@@ -93,21 +92,13 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
             var seedUrls = (await _seedUrlRepository.GetListOfSeedUrls()).Select(x => x.UrlAddress);
             var unvisitedUrls = await _pageIndexStorageRepository.FilterUnvisitedLinks(seedUrls);
 
-            var unvisitedUrlMessages = unvisitedUrls.Select(x => new FrontQueueNewURLMessage(x));
-            await _webCrawlerQueueClient.SendMessagesToCrawlingFrontQueue(unvisitedUrlMessages);
-
-            var firstUnvisitedUrl = unvisitedUrls.FirstOrDefault();
-
-            if (firstUnvisitedUrl is null)
-            {
-                return;
-            }
-
-            await _agentRegistrarService.CreateNewAgentForHostName(firstUnvisitedUrl.GetHostOfUrl());
+            var unvisitedUrlMessages = unvisitedUrls.Select(x => new CreateNewAgentForURLMessage(x));
+            await _webCrawlerQueueClient.SendMessagesToAgentCreateQueue(unvisitedUrlMessages);
         }
 
         private async Task StopCrawlingProcessAsync()
         {
+            await Task.Delay(1);
             throw new NotImplementedException();
         }
 

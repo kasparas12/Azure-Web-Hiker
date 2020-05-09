@@ -25,7 +25,6 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
         {
             return new ServiceInstanceListener[]
             {
-                new ServiceInstanceListener(context => Program.ApplicationContainer.GetInstance<FrontQueueCommunicationListener>()),
                 new ServiceInstanceListener(context => Program.ApplicationContainer.GetInstance<CrawlingQueueCommunicationListener>())
             };
         }

@@ -69,7 +69,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Core.Crawli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastructure.Abot2Crawler", "src\Infrastructure\Azure.Web.Hiker.Infrastructure.Abot2Crawler\Azure.Web.Hiker.Infrastructure.Abot2Crawler.csproj", "{03534BE0-9BCE-49B9-A852-C47CB298E877}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker", "src\Infrastructure\Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker\Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker.csproj", "{DE36D120-08B3-436F-9D81-2A28F34B6D9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker", "src\Infrastructure\Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker\Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker.csproj", "{DE36D120-08B3-436F-9D81-2A28F34B6D9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

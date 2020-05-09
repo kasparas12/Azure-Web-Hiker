@@ -18,12 +18,14 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
             UpdateConfigSettings(e.NewPackage.Settings);
         }
         public int MaxNumberOfAgents { get; set; }
+        public int AgentInactivityTimeoutValue { get; set; }
 
         private void UpdateConfigSettings(ConfigurationSettings settings)
         {
             var generalSectionParams = settings.Sections["GeneralApplicationConfigSection"].Parameters;
 
             MaxNumberOfAgents = int.Parse(generalSectionParams["MaxAgentsValue"].Value);
+            AgentInactivityTimeoutValue = int.Parse(generalSectionParams["AgentInactivityTimeoutValue"].Value);
         }
     }
 }

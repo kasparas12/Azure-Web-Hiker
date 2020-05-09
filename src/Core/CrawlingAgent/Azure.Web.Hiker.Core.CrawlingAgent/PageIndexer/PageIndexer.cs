@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
+using Azure.Web.Hiker.Core.AgentRegistrar.Services;
+using Azure.Web.Hiker.Core.Common.Extensions;
 using Azure.Web.Hiker.Core.Common.Messages;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
@@ -14,11 +17,15 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
     {
         private readonly IPageIndexStorageRepository _pageIndexStorageRepository;
         private readonly IWebCrawlerQueueClient _webCrawlerQueueClient;
+        private readonly IAgentRegistrarService _agentRegistrarService;
+        private readonly IEnumerable<IPageLinksFilter> _filters;
 
-        public PageIndexer(IPageIndexStorageRepository pageIndexStorageRepository, IWebCrawlerQueueClient webCrawlerQueueClient)
+        public PageIndexer(IPageIndexStorageRepository pageIndexStorageRepository, IWebCrawlerQueueClient webCrawlerQueueClient, IAgentRegistrarService agentRegistrarService, IEnumerable<IPageLinksFilter> filters)
         {
             _pageIndexStorageRepository = pageIndexStorageRepository;
             _webCrawlerQueueClient = webCrawlerQueueClient;
+            _agentRegistrarService = agentRegistrarService;
+            _filters = filters;
         }
 
         public async Task<bool> IsPageUnvisitedAsync(string url)
@@ -66,6 +73,10 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
 
                 await _pageIndexStorageRepository.InsertOrMergeNewPageIndex(pageIndex);
             }
+            else
+            {
+
+            }
         }
 
         public async Task ProcessCrawledLinksAsync(IEnumerable<Uri> crawledLinks, string crawlerHost)
@@ -77,56 +88,55 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
                 return;
             }
 
-            foreach (var link in crawledLinks)
-            {
-                if (link.Host != crawlerHost)
-                {
-                    if (!await IsPageExistingInIndex(link.AbsoluteUri))
-                    {
-                        await SendExternalLinkToFrontQueueAsync(link);
-                        continue;
-                    }
+            var filterResult = FilterLinks(crawledLinks);
 
+            var nonExistingLinks = new List<string>();
+
+            foreach (var link in filterResult)
+            {
+                var uri = new UriBuilder(link);
+                uri.Host = link.Host.Replace("www.", "");
+
+                if (await IsPageExistingInIndex(uri.Uri.AbsoluteUri))
+                {
                     continue;
                 }
 
-                var hitCount = await _webCrawlerQueueClient.GetNumberOfSameLinkMessagesInCrawlingAgentProcessingQueue<AddNewURLToCrawlingAgentMessage>(link);
-
-                if (hitCount > 0)
-                {
-                    await UpdateIndexHitCount(link, hitCount);
-                }
-                else
-                {
-                    if (!await IsPageExistingInIndex(link.AbsoluteUri))
-                    {
-                        await _webCrawlerQueueClient.SendScheduledMessageToCrawlingAgentProcessingQueue(new AddNewURLToCrawlingAgentMessage(link.AbsoluteUri), link.Host, DateTime.UtcNow.AddSeconds(5 * (index + 1)));
-                        await UpdateIndexHitCount(link, hitCount);
-                    }
-                }
+                nonExistingLinks.Add(uri.Uri.AbsoluteUri);
+                await _pageIndexStorageRepository.InsertOrMergeNewPageIndex(new PageIndex(uri.Uri.AbsoluteUri, 0, false));
 
                 index++;
             }
+
+            var sameHostNonExistingLinks = nonExistingLinks.Where(x => x.GetHostOfUrl() == crawlerHost);
+            var differentHostNonExistingLinks = nonExistingLinks.Except(sameHostNonExistingLinks);
+
+            await _webCrawlerQueueClient.SendMessagesToCrawlingAgentProcessingQueue(sameHostNonExistingLinks.Select(x => new AddNewURLToCrawlingAgentMessage(x)), crawlerHost);
+
+            foreach (var link in differentHostNonExistingLinks)
+            {
+                if (_agentRegistrarService.AgentExistsForGivenHostName(link.GetHostOfUrl()))
+                {
+                    await _webCrawlerQueueClient.SendMessageToCrawlingAgentProcessingQueue(new AddNewURLToCrawlingAgentMessage(link), link.GetHostOfUrl());
+                }
+                else
+                {
+                    await _webCrawlerQueueClient.SendMessageToAgentCreateQueue(new CreateNewAgentForURLMessage(link));
+                }
+            }
         }
 
-        private async Task SendExternalLinkToFrontQueueAsync(Uri externalLink)
+        private IEnumerable<Uri> FilterLinks(IEnumerable<Uri> urls)
         {
-            await _webCrawlerQueueClient.SendMessageToCrawlingFrontQueue(new FrontQueueNewURLMessage(externalLink.AbsoluteUri));
-        }
+            var listOfFilteredUlrs = urls;
 
-        private async Task UpdateIndexHitCount(Uri link, int incrementHitNumber)
-        {
-            var pageIndex = await _pageIndexStorageRepository.GetPageIndexByUrl(link.AbsoluteUri);
+            foreach (var filter in _filters)
+            {
+                var filteredResult = filter.FilterLinks(listOfFilteredUlrs);
+                listOfFilteredUlrs = filteredResult;
+            }
 
-            if (pageIndex is null)
-            {
-                await _pageIndexStorageRepository.InsertOrMergeNewPageIndex(new PageIndex(link.AbsoluteUri, incrementHitNumber, false, null));
-            }
-            else
-            {
-                pageIndex.HitCount += incrementHitNumber;
-                await _pageIndexStorageRepository.InsertOrMergeNewPageIndex(pageIndex);
-            }
+            return listOfFilteredUlrs;
         }
     }
 }

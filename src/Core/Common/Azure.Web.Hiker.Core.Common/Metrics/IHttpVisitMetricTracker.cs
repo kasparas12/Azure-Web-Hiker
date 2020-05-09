@@ -6,5 +6,6 @@ namespace Azure.Web.Hiker.Core.Common.Metrics
     {
         void TrackPageVisit(Uri url, DateTime visitedAt);
         void TrackVisitDisallowed(Uri url, string reason);
+        void TrackVisitTimeout(Uri url);
     }
 }
