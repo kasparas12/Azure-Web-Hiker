@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\Core\AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar.csproj" />
     <ProjectReference Include="..\..\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj" />
     <ProjectReference Include="..\..\Core\CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine.csproj" />
+    <ProjectReference Include="..\..\Core\RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent.csproj" />
     <ProjectReference Include="..\..\Infrastructure\AzureServiceBusCommunication\Azure.Web.Hiker.Infrastructure.ServiceBusClient\Azure.Web.Hiker.Infrastructure.ServiceBusClient.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.Dapper\Azure.Web.Hiker.Infrastructure.Persistence.Dapper.csproj" />

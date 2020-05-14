@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ServiceFabric" Version="7.1.409" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="4.1.409" />
   </ItemGroup>
 
   <ItemGroup>

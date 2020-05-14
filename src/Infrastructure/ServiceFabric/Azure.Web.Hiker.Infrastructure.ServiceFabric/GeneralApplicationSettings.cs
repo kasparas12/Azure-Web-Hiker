@@ -19,6 +19,9 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
         }
         public int MaxNumberOfAgents { get; set; }
         public int AgentInactivityTimeoutValue { get; set; }
+        public string CrawlerUserAgent { get; set; }
+        public double MinCrawlDelaySeconds { get; set; }
+        public double MaxCrawlDelaySeconds { get; set; }
 
         private void UpdateConfigSettings(ConfigurationSettings settings)
         {
@@ -26,6 +29,9 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
 
             MaxNumberOfAgents = int.Parse(generalSectionParams["MaxAgentsValue"].Value);
             AgentInactivityTimeoutValue = int.Parse(generalSectionParams["AgentInactivityTimeoutValue"].Value);
+            CrawlerUserAgent = generalSectionParams["CrawlerUserAgent"].Value;
+            MinCrawlDelaySeconds = double.Parse(generalSectionParams["MinCrawlDelay"].Value);
+            MaxCrawlDelaySeconds = double.Parse(generalSectionParams["MaxCrawlDelay"].Value);
         }
     }
 }

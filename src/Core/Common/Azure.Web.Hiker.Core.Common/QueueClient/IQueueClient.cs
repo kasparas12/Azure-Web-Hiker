@@ -18,7 +18,10 @@ namespace Azure.Web.Hiker.Core.Common.QueueClient
         Task SendScheduledMessageToCrawlingAgentProcessingQueue<T>(T message, string hostName, DateTime scheduledTime) where T : IBaseMessage;
 
         Task SendMessageToAgentCreateQueue<T>(T message) where T : IBaseMessage;
+        Task SendMessageToRenderingQueue<T>(T message) where T : IBaseMessage;
         Task SendMessagesToAgentCreateQueue<T>(IEnumerable<T> message) where T : IBaseMessage;
         Task<long> GetMessageCountInCrawlerQueue(string hostName);
     }
+
+    public interface IRenderQueueClient : IWebCrawlerQueueClient { }
 }

@@ -7,11 +7,13 @@ using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Container;
 
 using Microsoft.ServiceFabric.Services.Runtime;
 
+
 namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
 {
+
     internal static class Program
     {
-        public static SimpleInjector.Container ApplicationContainer { get; set; }
+        public static SimpleInjector.Container ApplicationContainer { get; private set; }
 
         /// <summary>
         /// This is the entry point of the service host process.

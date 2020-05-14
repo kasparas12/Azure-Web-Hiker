@@ -49,6 +49,9 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandler
                 case ControlAction.StopCrawlProcess:
                     await StopCrawlingProcessAsync();
                     break;
+                case ControlAction.StartRenderingProcess:
+                    await StartRenderProcessAsync();
+                    break;
                 default:
                     break;
 
@@ -82,12 +85,35 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandler
                 }
                 catch (Exception)
                 {
-                    return ControlAction.None;
+                    try
+                    {
+                        var startRenderMessage = message.GetDeserializedMessage<StartRenderProcessMessage>();
+
+                        if (startRenderMessage != null && startRenderMessage.StartRendering)
+                        {
+                            return ControlAction.StartRenderingProcess;
+                        }
+                        throw new Exception();
+
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception();
+                    }
                 }
             }
         }
 
         private async Task StartCrawlingProcessAsync()
+        {
+            var seedUrls = (await _seedUrlRepository.GetListOfSeedUrls()).Select(x => x.UrlAddress);
+            var unvisitedUrls = await _pageIndexStorageRepository.FilterUnvisitedLinks(seedUrls);
+
+            var unvisitedUrlMessages = unvisitedUrls.Select(x => new CreateNewAgentForURLMessage(x));
+            await _webCrawlerQueueClient.SendMessagesToAgentCreateQueue(unvisitedUrlMessages);
+        }
+
+        private async Task StartRenderProcessAsync()
         {
             var seedUrls = (await _seedUrlRepository.GetListOfSeedUrls()).Select(x => x.UrlAddress);
             var unvisitedUrls = await _pageIndexStorageRepository.FilterUnvisitedLinks(seedUrls);
@@ -106,7 +132,8 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandler
         {
             None = 0,
             StartCrawlProcess = 1,
-            StopCrawlProcess = 2
+            StopCrawlProcess = 2,
+            StartRenderingProcess = 3
         }
     }
 }

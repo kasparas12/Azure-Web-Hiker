@@ -1,110 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 
 using Azure.Web.Hiker.Core.AgentRegistrar.Models;
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
-
-using Dapper;
+using Azure.Web.Hiker.Infrastructure.Persistence.Dapper.Dapper;
 
 namespace Azure.Web.Hiker.Infrastructure.Persistence.Dapper
 {
-    public class DapperAgentRegistrarRepository : IAgentRegistrarRepository
+    public class DapperAgentRegistrarRepository : AgentRegistrarRepositoryBase, IRenderingAgentRepository
     {
-        private readonly string _connectionString;
+        protected override string TableName => "dbo.agent_registrar";
+        protected override string AgentSequenceName => "AgentNameNumberCounter";
 
-        public DapperAgentRegistrarRepository(string connectionString)
+        public DapperAgentRegistrarRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
+
         }
 
         public bool AgentForSpecificHostExists(string hostname)
         {
-            return !(GetAgentRegistrarByHostname(hostname) is null);
+            return AgentForSpecificHostExists(TableName, hostname);
         }
 
         public void DeleteAgentEntry(string hostname)
         {
-            var sql = "UPDATE dbo.agent_registrar SET is_deleted = 1 WHERE agent_host = @AgentHost";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Execute(sql, new { AgentHost = hostname });
-            }
+            DeleteAgentEntry(TableName, hostname);
         }
 
         public IAgentRegistrarEntry GetAgentForSpecificHost(string hostname)
         {
-            return GetAgentRegistrarByHostname(hostname);
+            return GetAgentForSpecificHost(TableName, hostname);
         }
 
         public IEnumerable<(string, string)> GetHostsForWhichAgentsAreFree(DateTime timeoutDate)
         {
-            var sql = "SELECT agent_host, agent_name FROM dbo.agent_registrar WHERE is_deleted = 0 and last_activity < @TimeoutDate";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query<(string, string)>(sql, new { TimeoutDate = timeoutDate });
-            }
+            return GetHostsForWhichAgentsAreFree(TableName, timeoutDate);
         }
 
         public int GetNextAgentCounterNumber()
         {
-            var sql = "SELECT next value for AgentNameNumberCounter";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.QueryFirstOrDefault<int>(sql);
-            }
+            return GetNextAgentCounterNumber(AgentSequenceName);
         }
 
         public int GetNumberOfActiveAgents()
         {
-            var sql = "SELECT COUNT(*) FROM dbo.agent_registrar WHERE is_deleted = 0";
+            return GetNumberOfActiveAgents(TableName);
+        }
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.QueryFirstOrDefault<int>(sql);
-            }
+        public double? GetPrecalculatedCrawlDelay(string hostName)
+        {
+            return GetPrecalculatedCrawlDelay(TableName, hostName);
+        }
+
+        public void InsertCalculatedCrawlDelay(string hostName, double crawlDelay)
+        {
+            InsertCalculatedCrawlDelay(TableName, hostName, crawlDelay);
         }
 
         public void InsertNewAgent(IAgentRegistrarEntry newEntry)
         {
-            var sql = "INSERT INTO dbo.agent_registrar(agent_name,agent_host,is_deleted,created_at) VALUES (@Name, @Host, 0, @CreatedAt)";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Execute(sql, new { Name = newEntry.AgentName, Host = newEntry.AgentHost, CreatedAt = DateTime.Now });
-            }
+            InsertNewAgent(TableName, newEntry);
         }
 
         public void UpdateAgentActivityTime(string hostName, DateTime lastActivity)
         {
-            var sql = "UPDATE dbo.agent_registrar SET last_activity = @LastActivity WHERE agent_host = @AgentHost";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Execute(sql, new { LastActivity = lastActivity, AgentHost = hostName });
-            }
-        }
-
-        private AgentRegistrarEntry GetAgentRegistrarByHostname(string hostname)
-        {
-            var sql = "SELECT id Id, agent_name AgentName, agent_host AgentHost, is_deleted IsDeleted, created_at CreatedAt, deleted_at DeletedAt FROM dbo.agent_registrar WHERE is_deleted = 0 AND agent_host = @AgentHost";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    var a = connection.QueryFirstOrDefault<AgentRegistrarEntry>(sql, new { AgentHost = hostname });
-                    return a;
-                }
-                catch (Exception e)
-                {
-                    var a = e;
-                    return null;
-                }
-            }
+            UpdateAgentActivityTime(TableName, hostName, lastActivity);
         }
     }
 }

@@ -10,17 +10,18 @@ using Azure.Web.Hiker.Core.Common.Settings;
 using Azure.Web.Hiker.Core.CrawlingAgent.Models;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer;
+using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
 using Azure.Web.Hiker.Core.DnsResolver.Interfaces;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.DNSResolver.UbietyResolver;
-using Azure.Web.Hiker.Infrastructure.Abot2Crawler;
 using Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config;
 using Azure.Web.Hiker.Infrastructure.Persistence.Dapper;
+using Azure.Web.Hiker.Infrastructure.Persistence.Dapper.Dapper;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
+using Azure.Web.Hiker.Infrastructure.ServiceBusClient.QueueCreators;
 using Azure.Web.Hiker.Infrastructure.ServiceFabric;
-using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Helpers;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.MessageHandlers;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
 
@@ -40,35 +41,37 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
     {
         public static SimpleInjector.Container CreateContainer(StatelessServiceContext context)
         {
-            var container = new SimpleInjector.Container();
-            container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+            var container = SetInitialContainerSettings(context);
 
-            ConfigureSettings(container, context);
-            ConfigureDnsResolver(container);
             ConfigureRepositories(container, context);
-            ConfigureServiceBusQueueClient(container, context);
+            ConfigureServiceFabricClient(container);
+            ConfigureSettings(container, context);
+            ConfigureCrawlingURLFilters(container);
             ConfigureCoreServices(container);
-            ConfigureGeneralApplicationConfig(container, context);
+            ConfigureServiceBusQueueClients(container, context);
+            ConfigurePolitinessCalculator(container, context);
+            ConfigureQueueCreators(container, context);
+            ConfigureCrawlingAgentListeningHandlersAndCommunicationListeners(container, context);
             ConfigureCrawlingHostData(context, container);
-            ConfigureServiceBusCrawlingQueueListener(context, container);
-            ConfigureAgentProcessingQueueCreator(container, context);
             ConfigureApplicationInsightsTracker(container, context);
-
-            container.RegisterInstance<StatelessServiceContext>(context);
-            container.Register<CrawlingAgent>(() => new CrawlingAgent(context), Lifestyle.Singleton);
 
             return container;
         }
 
-        private static void ConfigureSettings(SimpleInjector.Container container, StatelessServiceContext context)
+        private static SimpleInjector.Container SetInitialContainerSettings(StatelessServiceContext context)
         {
-            container.Register<IDnsConfigureSettings>(() => new DnsConfigSettings(context), Lifestyle.Singleton);
-        }
+            var container = new SimpleInjector.Container();
 
-        private static void ConfigureDnsResolver(SimpleInjector.Container container)
-        {
-            container.Register<IDnsResolver>(() =>
-                new UbietyDnsResolver(container.GetInstance<IDnsConfigureSettings>()), Lifestyle.Singleton);
+            container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+
+            // Register Service Instance
+            container.Register(() =>
+                new CrawlingAgent(context, container.GetAllInstances<IAzureServiceBusCommunicationListener>()), Lifestyle.Singleton);
+
+            // Registering service context into container
+            container.RegisterInstance(context);
+
+            return container;
         }
 
         private static void ConfigureRepositories(SimpleInjector.Container container, StatelessServiceContext context)
@@ -77,68 +80,94 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             string connectionString = configurationPackage.Settings.Sections["AgentRegistrarDatabaseSection"].Parameters["ConnectionString"].Value;
             string storageAccountConnectionString = configurationPackage.Settings.Sections["StorageAccountConfigSection"].Parameters["StorageConnectionString"].Value;
 
-            var cloudTable = PageIndexCloudTable.SetupPageIndexCloudTable(storageAccountConnectionString).GetAwaiter().GetResult();
+            // Registering SQL database repositories
             container.Register<IAgentRegistrarRepository>(() => new DapperAgentRegistrarRepository(connectionString));
+            container.Register<ISettingsRepository>(() => new DapperSettingsRepository(connectionString));
+
+            // Registering NoSQL Table Storage database repositories
+            var cloudTable = PageIndexCloudTable.SetupPageIndexCloudTable(storageAccountConnectionString).GetAwaiter().GetResult();
             container.Register<IPageIndexStorageRepository>(() => new PageIndexStorageRepository(cloudTable), Lifestyle.Transient);
+        }
+
+        private static void ConfigureServiceFabricClient(SimpleInjector.Container container)
+        {
+            container.Register(() => new FabricClient(), Lifestyle.Singleton);
+        }
+
+        private static void ConfigureSettings(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            container.Register<IServiceBusSettings, ServiceBusSettings>();
+            container.Register<IGeneralApplicationSettings>(() => new GeneralApplicationSettings(context));
+        }
+
+        private static void ConfigureCrawlingURLFilters(SimpleInjector.Container container)
+        {
+            container.Collection.Register<IPageLinksFilter>(typeof(AvoidPopularSitesFilter));
         }
 
         private static void ConfigureCoreServices(SimpleInjector.Container container)
         {
-            container.Register<FabricClient>(() => new FabricClient(), Lifestyle.Singleton);
             container.Register<IAgentController, FabricAgentController>();
-            container.Register<IAgentRegistrarService, AgentRegistrarService>();
-            container.Register<IServiceBusSettings, ServiceBusSettings>();
             container.Register<IPageIndexer, PageIndexer>();
-            container.Register<IPageCrawler, AbotWebCrawler>();
-            container.Collection.Register<IPageLinksFilter>(typeof(AvoidPopularSitesFilter));
+            container.Register<IAgentRegistrarService, AgentRegistrarService>();
+            container.Register<ISettingsService, SettingsService>();
+
+            ConfigureDnsResolver(container);
         }
 
-        private static void ConfigureServiceBusQueueClient(SimpleInjector.Container container, StatelessServiceContext context)
+        // Configuring ASB queue communication clients
+        private static void ConfigureServiceBusQueueClients(SimpleInjector.Container container, StatelessServiceContext context)
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
+            string renderingServiceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["RenderingServiceBusConnectionString"].Value;
 
-            container.Register<ServiceBusConnection>(() => new ServiceBusConnection(serviceBusConnectionString), Lifestyle.Singleton);
+            container.Register<IWebCrawlerQueueClient>(() => new ServiceBusQueueClient(container.GetInstance<IServiceBusSettings>(),
+                new ServiceBusConnection(serviceBusConnectionString),
+                new ManagementClient(serviceBusConnectionString)), Lifestyle.Singleton);
 
-            container.Register<ManagementClient>(() => new ManagementClient(serviceBusConnectionString), Lifestyle.Singleton);
-            container.Register<IWebCrawlerQueueClient, ServiceBusQueueClient>();
+            container.Register<IRenderQueueClient>(() => new ServiceBusQueueClient(container.GetInstance<IServiceBusSettings>(),
+                new ServiceBusConnection(serviceBusConnectionString),
+                new ManagementClient(serviceBusConnectionString)), Lifestyle.Singleton);
+
         }
 
-        private static void ConfigureServiceBusCrawlingQueueListener(StatelessServiceContext context, SimpleInjector.Container container)
+        private static void ConfigureCrawlingAgentListeningHandlersAndCommunicationListeners(SimpleInjector.Container container, StatelessServiceContext context)
         {
             var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
-            string serviceBusConnectionString = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ServiceBusConnectionString"].Value;
 
             var assignedHostName = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(context.InitializationData));
 
-            container.Register<CrawlingQueueCommunicationListener>(() => new CrawlingQueueCommunicationListener(
-                cl => new CrawlingQueueMessageHandler(cl, container.GetInstance<IPageIndexer>(), container.GetInstance<IPageCrawler>(), container.GetInstance<ICrawlingAgentHost>()), context, assignedHostName.AssignedHostName, serviceBusConnectionString, serviceBusConnectionString), Lifestyle.Singleton);
+            container.Register<IMessageHandler, CrawlingQueueMessageHandler>();
+            container.Collection.Register<IAzureServiceBusCommunicationListener>(new CrawlingQueueCommunicationListener[] { new CrawlingQueueCommunicationListener(container.GetInstance<IServiceBusSettings>(), container.GetInstance<IMessageHandler>(), assignedHostName.AssignedHostName) });
+        }
+
+        private static void ConfigureQueueCreators(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            container.Register<IAgentProcessingQueueCreator, CrawlingAgentQueueCreator>();
+        }
+
+        private static void ConfigurePolitinessCalculator(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            string apiUrl = configurationPackage.Settings.Sections["GeneralApplicationConfigSection"].Parameters["DomainAuthorityDeterminerAPIURL"].Value;
+            string apiKey = configurationPackage.Settings.Sections["GeneralApplicationConfigSection"].Parameters["DomainAuthorityDeterminerAPIKey"].Value;
+
+            container.Register<IRobotsParser, TurnerRobotsParser>();
+            container.Register<IDomainImportanceCalculator>(() => new OpenRankDomainImportanceCalculator(apiUrl, apiKey));
+            container.Register<IPolitenessDeterminer, DefaultPolitenessDeterminer>();
+        }
+
+        private static void ConfigureDnsResolver(SimpleInjector.Container container)
+        {
+            container.Register<IDnsResolver>(() =>
+                new UbietyDnsResolver(container.GetInstance<IDnsConfigureSettings>()), Lifestyle.Singleton);
         }
 
         private static void ConfigureCrawlingHostData(StatelessServiceContext context, SimpleInjector.Container container)
         {
             var assignedHostName = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(context.InitializationData));
             container.Register<ICrawlingAgentHost>(() => new CrawlerAgentInitializationData(assignedHostName.AssignedHostName));
-        }
-
-        private static void ConfigureGeneralApplicationConfig(SimpleInjector.Container container, StatelessServiceContext context)
-        {
-            container.Register<IGeneralApplicationSettings>(() => new GeneralApplicationSettings(context));
-        }
-
-        private static void ConfigureAgentProcessingQueueCreator(SimpleInjector.Container container, StatelessServiceContext context)
-        {
-            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
-
-            string tenantId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["TenantId"].Value;
-            string clientId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ClientId"].Value;
-            string clientSecret = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ClientSecret"].Value;
-            string namespaceName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["NamespaceName"].Value;
-            string subscriptionId = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["SubscriptionId"].Value;
-            string resourceGroupName = configurationPackage.Settings.Sections["ServiceBusConfigSection"].Parameters["ResourceGroupName"].Value;
-
-            var serviceBusCredentials = new ServiceBusCredentials(tenantId, clientId, clientSecret, namespaceName, subscriptionId, resourceGroupName);
-            container.Register<IAgentProcessingQueueCreator>(() => new ServiceBusAgentProcessingQueueCreator(serviceBusCredentials));
         }
 
         private static void ConfigureApplicationInsightsTracker(SimpleInjector.Container container, StatelessServiceContext context)

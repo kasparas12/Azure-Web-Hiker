@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Azure.Web.Hiker.CrawlingEngine\Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.csproj" />
     <ProjectReference Include="..\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.csproj" />
+    <ProjectReference Include="..\RenderAgent\RenderAgent.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

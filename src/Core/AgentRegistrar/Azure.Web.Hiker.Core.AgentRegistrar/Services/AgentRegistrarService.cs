@@ -1,13 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-using Azure.Web.Hiker.Core.AgentRegistrar.Exceptions;
 using Azure.Web.Hiker.Core.AgentRegistrar.Models;
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.Common.Settings;
+using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
 
 namespace Azure.Web.Hiker.Core.AgentRegistrar.Services
 {
@@ -18,100 +15,38 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Services
         Task<bool> RemoveFinishedWorkAgents();
     }
 
-    public class AgentRegistrarService : IAgentRegistrarService
+    public interface IRenderingAgentService : IAgentRegistrarService
     {
-        private readonly IAgentRegistrarRepository _repository;
-        private readonly IAgentProcessingQueueCreator _agentProcessingQueueCreator;
-        private readonly IGeneralApplicationSettings _generalApplicationSettings;
-        private readonly IAgentController _agentController;
-        private readonly IWebCrawlerQueueClient _webCrawlerQueueClient;
 
+    }
+
+    public class AgentRegistrarService : AgentRegistrarServiceBase, IAgentRegistrarService
+    {
         public AgentRegistrarService(
             IAgentRegistrarRepository repository,
             IGeneralApplicationSettings generalApplicationSettings,
             IAgentProcessingQueueCreator agentProcessingQueueCreator,
             IAgentController agentController,
-            IWebCrawlerQueueClient webCrawlerQueueClient)
+            IWebCrawlerQueueClient webCrawlerQueueClient,
+            ISettingsService settingsService) : base(repository, generalApplicationSettings, agentProcessingQueueCreator, agentController, webCrawlerQueueClient, settingsService)
         {
-            _repository = repository;
-            _generalApplicationSettings = generalApplicationSettings;
-            _agentProcessingQueueCreator = agentProcessingQueueCreator;
-            _agentController = agentController;
-            _webCrawlerQueueClient = webCrawlerQueueClient;
         }
 
-        public bool AgentExistsForGivenHostName(string hostName)
+        protected override AgentRegistrarEntry GetAgentName(string hostName)
         {
-            return _repository.AgentForSpecificHostExists(hostName);
+            var number = _repository.GetNextAgentCounterNumber();
+            return new AgentRegistrarEntry($"A{number}", hostName);
         }
 
-        public async Task<IAgentRegistrarEntry> CreateNewAgentForHostName(string hostname)
+        protected override int GetNumberOfMaxAgents()
         {
-            var numberOfActiveAgents = _repository.GetNumberOfActiveAgents();
-            var maxAgentsSetting = _generalApplicationSettings.MaxNumberOfAgents;
-
-            if (numberOfActiveAgents >= maxAgentsSetting)
-            {
-                Debug.WriteLine("MAX AGENTS!! Time: " + DateTime.Now);
-
-                var someAgentsRemoved = await RemoveFinishedWorkAgents();
-
-                if (!someAgentsRemoved)
-                {
-                    await Task.Delay(TimeSpan.FromMinutes(2)).ConfigureAwait(false);
-                    throw new MaxAgentsRegisteredException("MAX");
-                }
-            }
-
-            var newAgentNumber = _repository.GetNextAgentCounterNumber();
-            var newEntry = new AgentRegistrarEntry($"A{newAgentNumber}", hostname);
-
-            await _agentProcessingQueueCreator.CreateNewProcessingQueueForAgent(newEntry.AgentHost);
-            await _agentController.SpawnNewAgentForHostnameAsync(newEntry.AgentHost, newEntry.AgentName);
-
-            _repository.InsertNewAgent(newEntry);
-
-            return newEntry;
+            return _settingsService.GetSettingValue<int>("crawling_agents_limit");
         }
 
-        public async Task<bool> RemoveFinishedWorkAgents()
+        protected override async Task SpawnNewAgent(string agentHost, string agentName)
         {
-            int timeoutMinutes = _generalApplicationSettings.AgentInactivityTimeoutValue * -1;
-            var timeoutDate = DateTime.UtcNow.AddMinutes(timeoutMinutes);
-
-            var hostsForWhichAgentsAreFree = _repository.GetHostsForWhichAgentsAreFree(timeoutDate);
-
-            if (hostsForWhichAgentsAreFree == null || hostsForWhichAgentsAreFree.Count() == 0)
-            {
-                return false;
-            }
-
-            int successfullyKilledAgents = 0;
-
-            foreach (var host in hostsForWhichAgentsAreFree)
-            {
-                if (await HostQueueIsEmpty(host.Item1))
-                {
-                    await _agentController.DeleteAgentForHostnameAsync(host.Item2);
-                    await _agentProcessingQueueCreator.DeleteProcessingQueueForAgent(host.Item1);
-                    _repository.DeleteAgentEntry(host.Item1);
-
-                    successfullyKilledAgents++;
-                }
-            }
-
-            if (successfullyKilledAgents > 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private async Task<bool> HostQueueIsEmpty(string hostname)
-        {
-            var count = await _webCrawlerQueueClient.GetMessageCountInCrawlerQueue(hostname);
-            return count == 0;
+            string serviceType = "Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgentType";
+            await _agentController.SpawnNewAgentForHostnameAsync(serviceType, agentHost, agentName);
         }
     }
 }

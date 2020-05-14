@@ -4,7 +4,7 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar
 {
     public interface IAgentController
     {
-        Task SpawnNewAgentForHostnameAsync(string hostname, string serviceName);
+        Task SpawnNewAgentForHostnameAsync(string serviceTypeName, string hostname, string serviceName);
         Task DeleteAgentForHostnameAsync(string serviceName);
     }
 }

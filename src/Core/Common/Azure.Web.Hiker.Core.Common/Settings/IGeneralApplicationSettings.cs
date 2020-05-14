@@ -4,5 +4,8 @@
     {
         public int MaxNumberOfAgents { get; set; }
         public int AgentInactivityTimeoutValue { get; set; }
+        public string CrawlerUserAgent { get; set; }
+        public double MinCrawlDelaySeconds { get; set; }
+        public double MaxCrawlDelaySeconds { get; set; }
     }
 }

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Fabric;
 
+using Azure.Web.Hiker.Infrastructure.ServiceFabric;
+
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 
@@ -11,8 +13,8 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
     /// </summary>
     internal sealed class CrawlingEngine : StatelessService
     {
-        private readonly IAzureServiceBusCommunicationListener _communicationListener;
-        public CrawlingEngine(StatelessServiceContext context, IAzureServiceBusCommunicationListener communicationListener)
+        private readonly IEnumerable<IAzureServiceBusCommunicationListener> _communicationListener;
+        public CrawlingEngine(StatelessServiceContext context, IEnumerable<IAzureServiceBusCommunicationListener> communicationListener)
             : base(context)
         {
             _communicationListener = communicationListener;
@@ -25,11 +27,17 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
         /// Program.ApplicationContainer.GetInstance<AgentCreateQueueCommunicationListener>()
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            return new ServiceInstanceListener[]
+            List<ServiceInstanceListener> listeners = new List<ServiceInstanceListener>();
+            listeners.Add(new ServiceInstanceListener((context => Program.ApplicationContainer.GetInstance<CrawlingProcessControlCommunicationListener>()), "CrawlingProcessControlListener"));
+
+            int i = 1;
+            foreach (var listener in _communicationListener)
             {
-                new ServiceInstanceListener((context => Program.ApplicationContainer.GetInstance<CrawlingProcessControlCommunicationListener>()),"ServiceBusAgentCrawl"),
-                new ServiceInstanceListener((context => _communicationListener), "ServiceBusAgentCreateListener")
-            };
+                var name = $"listener{i}";
+                listeners.Add(new ServiceInstanceListener((context => listener), name));
+                i++;
+            }
+            return listeners;
         }
     }
 }

@@ -20,7 +20,7 @@
                                     AzureActiveDirectory="true"
                                     ServerCertThumbprint="0123456789012345678901234567890123456789" />
   -->
-  <ClusterConnectionParameters ConnectionEndpoint="" />
-  <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
+  <ClusterConnectionParameters ConnectionEndpoint="azurewebhiker.northeurope.cloudapp.azure.com:19000" X509Credential="true" FindType="FindByThumbprint" FindValue="7267B423FD7048A0DFD7C67B46A5116FDB085D86" ServerCertThumbprint="7267B423FD7048A0DFD7C67B46A5116FDB085D86" StoreLocation="CurrentUser" StoreName="My" />  
+  <ApplicationParameterFile Path="..\ApplicationParameters\Local.1Node.xml" />
   <CopyPackageParameters CompressPackage="true" />
 </PublishProfile>

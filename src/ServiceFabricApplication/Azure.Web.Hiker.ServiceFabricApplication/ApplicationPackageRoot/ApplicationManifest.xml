@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="Azure.Web.Hiker.ServiceFabricApplicationType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
+    <Parameter Name="RenderAgent_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Stateless1_InstanceCount" DefaultValue="-1" />
     <Parameter Name="CrawlingEngine_InstanceCount" DefaultValue="-1" />
@@ -15,16 +16,62 @@
     <Parameter Name="ClientId" DefaultValue="" />
     <Parameter Name="ClientSecret" DefaultValue="" />
     <Parameter Name="NamespaceName" DefaultValue="" />
+    <Parameter Name="RenderingNamespaceName" DefaultValue="" />
     <Parameter Name="ResourceGroupName" DefaultValue="" />
     <Parameter Name="SubscriptionId" DefaultValue="" />
     <Parameter Name="StorageConnectionString" DefaultValue="" />
     <Parameter Name="MaxAgentsValue" DefaultValue="" />
     <Parameter Name="AgentInactivityTimeoutValue" DefaultValue="" />
     <Parameter Name="InstrumentationKey" DefaultValue="" />
+    <Parameter Name="DomainAuthorityDeterminerAPIURL" DefaultValue="" />
+    <Parameter Name="DomainAuthorityDeterminerAPIKey" DefaultValue="" />
+    <Parameter Name="MinCrawlDelay" DefaultValue="" />
+    <Parameter Name="MaxCrawlDelay" DefaultValue="" />
+    <Parameter Name="CrawlerUserAgent" DefaultValue="" />
+    <Parameter Name="RenderingServiceBusConnectionString" DefaultValue="" />
+    <Parameter Name="RenderQueue" DefaultValue="" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="RenderAgentPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="ServiceBusConfigSection">
+            <Parameter Name="AgentCreateQueue" Value="[AgentCreateQueue]" />
+            <Parameter Name="CWCEControlQueue" Value="[CWCEControlQueue]" />
+            <Parameter Name="ServiceBusConnectionString" Value="[ServiceBusConnectionString]" />
+            <Parameter Name="RenderingServiceBusConnectionString" Value="[RenderingServiceBusConnectionString]" />
+            <Parameter Name="RenderQueue" Value="[RenderQueue]" />
+            <Parameter Name="TenantId" Value="[TenantId]" />
+            <Parameter Name="ClientId" Value="[ClientId]" />
+            <Parameter Name="ClientSecret" Value="[ClientSecret]" />
+            <Parameter Name="NamespaceName" Value="[NamespaceName]" />
+            <Parameter Name="RenderingNamespaceName" Value="[RenderingNamespaceName]" />
+            <Parameter Name="ResourceGroupName" Value="[ResourceGroupName]" />
+            <Parameter Name="SubscriptionId" Value="[SubscriptionId]" />
+          </Section>
+          <Section Name="AgentRegistrarDatabaseSection">
+            <Parameter Name="ConnectionString" Value="[AgentRegistrarDatabaseConnectionString]" />
+          </Section>
+          <Section Name="GeneralApplicationConfigSection">
+            <Parameter Name="MaxAgentsValue" Value="[MaxAgentsValue]" />
+            <Parameter Name="AgentInactivityTimeoutValue" Value="[AgentInactivityTimeoutValue]" />
+            <Parameter Name="DomainAuthorityDeterminerAPIURL" Value="[DomainAuthorityDeterminerAPIURL]" />
+            <Parameter Name="DomainAuthorityDeterminerAPIKey" Value="[DomainAuthorityDeterminerAPIKey]" />
+            <Parameter Name="MinCrawlDelay" Value="[MinCrawlDelay]" />
+            <Parameter Name="MaxCrawlDelay" Value="[MaxCrawlDelay]" />
+            <Parameter Name="CrawlerUserAgent" Value="[CrawlerUserAgent]" />
+          </Section>
+          <Section Name="StorageAccountConfigSection">
+            <Parameter Name="StorageConnectionString" Value="[StorageConnectionString]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgentPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides>
@@ -39,10 +86,13 @@
             <Parameter Name="AgentCreateQueue" Value="[AgentCreateQueue]" />
             <Parameter Name="ServiceBusConnectionString" Value="[ServiceBusConnectionString]" />
             <Parameter Name="CWCEControlQueue" Value="[CWCEControlQueue]" />
+            <Parameter Name="RenderingServiceBusConnectionString" Value="[RenderingServiceBusConnectionString]" />
+            <Parameter Name="RenderQueue" Value="[RenderQueue]" />
             <Parameter Name="TenantId" Value="[TenantId]" />
             <Parameter Name="ClientId" Value="[ClientId]" />
             <Parameter Name="ClientSecret" Value="[ClientSecret]" />
             <Parameter Name="NamespaceName" Value="[NamespaceName]" />
+            <Parameter Name="RenderingNamespaceName" Value="[RenderingNamespaceName]" />
             <Parameter Name="ResourceGroupName" Value="[ResourceGroupName]" />
             <Parameter Name="SubscriptionId" Value="[SubscriptionId]" />
           </Section>
@@ -55,6 +105,11 @@
           <Section Name="GeneralApplicationConfigSection">
             <Parameter Name="MaxAgentsValue" Value="[MaxAgentsValue]" />
             <Parameter Name="AgentInactivityTimeoutValue" Value="[AgentInactivityTimeoutValue]" />
+            <Parameter Name="DomainAuthorityDeterminerAPIURL" Value="[DomainAuthorityDeterminerAPIURL]" />
+            <Parameter Name="DomainAuthorityDeterminerAPIKey" Value="[DomainAuthorityDeterminerAPIKey]" />
+            <Parameter Name="MinCrawlDelay" Value="[MinCrawlDelay]" />
+            <Parameter Name="MaxCrawlDelay" Value="[MaxCrawlDelay]" />
+            <Parameter Name="CrawlerUserAgent" Value="[CrawlerUserAgent]" />
           </Section>
           <Section Name="ApplicationInsightsConfigSection">
             <Parameter Name="InstrumentationKey" Value="[InstrumentationKey]" />
@@ -72,10 +127,13 @@
             <Parameter Name="AgentCreateQueue" Value="[AgentCreateQueue]" />
             <Parameter Name="CWCEControlQueue" Value="[CWCEControlQueue]" />
             <Parameter Name="ServiceBusConnectionString" Value="[ServiceBusConnectionString]" />
+            <Parameter Name="RenderingServiceBusConnectionString" Value="[RenderingServiceBusConnectionString]" />
+            <Parameter Name="RenderQueue" Value="[RenderQueue]" />
             <Parameter Name="TenantId" Value="[TenantId]" />
             <Parameter Name="ClientId" Value="[ClientId]" />
             <Parameter Name="ClientSecret" Value="[ClientSecret]" />
             <Parameter Name="NamespaceName" Value="[NamespaceName]" />
+            <Parameter Name="RenderingNamespaceName" Value="[RenderingNamespaceName]" />
             <Parameter Name="ResourceGroupName" Value="[ResourceGroupName]" />
             <Parameter Name="SubscriptionId" Value="[SubscriptionId]" />
           </Section>
@@ -85,6 +143,11 @@
           <Section Name="GeneralApplicationConfigSection">
             <Parameter Name="MaxAgentsValue" Value="[MaxAgentsValue]" />
             <Parameter Name="AgentInactivityTimeoutValue" Value="[AgentInactivityTimeoutValue]" />
+            <Parameter Name="DomainAuthorityDeterminerAPIURL" Value="[DomainAuthorityDeterminerAPIURL]" />
+            <Parameter Name="DomainAuthorityDeterminerAPIKey" Value="[DomainAuthorityDeterminerAPIKey]" />
+            <Parameter Name="MinCrawlDelay" Value="[MinCrawlDelay]" />
+            <Parameter Name="MaxCrawlDelay" Value="[MaxCrawlDelay]" />
+            <Parameter Name="CrawlerUserAgent" Value="[CrawlerUserAgent]" />
           </Section>
           <Section Name="StorageAccountConfigSection">
             <Parameter Name="StorageConnectionString" Value="[StorageConnectionString]" />

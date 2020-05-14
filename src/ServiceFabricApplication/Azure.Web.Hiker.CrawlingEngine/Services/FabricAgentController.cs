@@ -23,7 +23,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services
             _statelessServiceContext = statelessServiceContext;
         }
 
-        public async Task SpawnNewAgentForHostnameAsync(string hostname, string serviceName)
+        public async Task SpawnNewAgentForHostnameAsync(string serviceTypeName, string hostname, string serviceName)
         {
             var crawlerData = JsonConvert.SerializeObject(new CrawlerAgentInitializationData(hostname));
 
@@ -32,7 +32,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services
             {
                 ApplicationName = new Uri(_statelessServiceContext.CodePackageActivationContext.ApplicationName),
                 ServiceName = new Uri($"{_statelessServiceContext.CodePackageActivationContext.ApplicationName}/{serviceName}"),
-                ServiceTypeName = "Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgentType",
+                ServiceTypeName = serviceTypeName, // "Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgentType",
                 PartitionSchemeDescription = new SingletonPartitionSchemeDescription(),
                 InitializationData = Encoding.ASCII.GetBytes(crawlerData),
                 InstanceCount = 1,
@@ -42,7 +42,14 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services
             // Further below we create the instances of the service.
             foreach (var serivceDescription in serviceDescriptions)
             {
-                await _fabricClient.ServiceManager.CreateServiceAsync(serivceDescription);
+                try
+                {
+                    await _fabricClient.ServiceManager.CreateServiceAsync(serivceDescription);
+                }
+                catch (Exception e)
+                {
+                    var b = e;
+                }
             }
         }
 

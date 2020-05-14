@@ -3,6 +3,7 @@ using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.AgentRegistrar.Services;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.Common.Settings;
+using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,6 +19,7 @@ namespace Azure.Web.Hiker.Tests.Core
         private Mock<IAgentController> _agentControllerMock;
         private Mock<IAgentProcessingQueueCreator> _agentProcessingQueueCreatorMock;
         private Mock<IWebCrawlerQueueClient> _webCrawlerQueueClientMock;
+        private Mock<ISettingsService> _settingsService;
 
         private AgentRegistrarService _service;
 
@@ -28,7 +30,9 @@ namespace Azure.Web.Hiker.Tests.Core
             _agentControllerMock = new Mock<IAgentController>();
             _agentProcessingQueueCreatorMock = new Mock<IAgentProcessingQueueCreator>();
             _webCrawlerQueueClientMock = new Mock<IWebCrawlerQueueClient>();
-            _service = new AgentRegistrarService(_repositoryMock.Object, _generalApplicationSettingsMock.Object, _agentProcessingQueueCreatorMock.Object, _agentControllerMock.Object, _webCrawlerQueueClientMock.Object);
+            _settingsService = new Mock<ISettingsService>();
+
+            _service = new AgentRegistrarService(_repositoryMock.Object, _generalApplicationSettingsMock.Object, _agentProcessingQueueCreatorMock.Object, _agentControllerMock.Object, _webCrawlerQueueClientMock.Object, _settingsService.Object);
         }
 
         [TestMethod]

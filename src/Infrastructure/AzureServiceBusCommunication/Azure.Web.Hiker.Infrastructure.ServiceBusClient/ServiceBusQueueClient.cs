@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
 {
-    public class ServiceBusQueueClient : IWebCrawlerQueueClient
+    public class ServiceBusQueueClient : IWebCrawlerQueueClient, IRenderQueueClient
     {
         private readonly IServiceBusSettings _serviceBusSettings;
         private readonly ServiceBusConnection _serviceBusConnection;
@@ -68,6 +68,11 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
         public async Task SendMessageToCrawlingAgentProcessingQueue<T>(T message, string hostName) where T : IBaseMessage
         {
             await SendMessage(message, hostName);
+        }
+
+        public async Task SendMessageToRenderingQueue<T>(T message) where T : IBaseMessage
+        {
+            await SendMessage(message, _serviceBusSettings.RenderingQueue);
         }
 
         public async Task SendScheduledMessageToCrawlingAgentProcessingQueue<T>(T message, string hostName, DateTime scheduledTime) where T : IBaseMessage

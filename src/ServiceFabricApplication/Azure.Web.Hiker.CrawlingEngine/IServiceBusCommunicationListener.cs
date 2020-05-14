@@ -2,16 +2,13 @@
 using System.Threading.Tasks;
 
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
+using Azure.Web.Hiker.Infrastructure.ServiceFabric;
 using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandlers.Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.MessageHandlers;
 
 using Microsoft.Azure.ServiceBus;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
 
 namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine
 {
-    public interface IAzureServiceBusCommunicationListener : ICommunicationListener
-    {
-    }
 
     public class ServiceBusCommunicationListener : IAzureServiceBusCommunicationListener
     {

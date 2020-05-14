@@ -6,28 +6,25 @@ using Azure.Web.Hiker.Core.CrawlingAgent.Models;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient.Extensions;
+using Azure.Web.Hiker.Infrastructure.ServiceFabric;
 
 using Microsoft.Azure.ServiceBus;
 
-using ServiceFabric.ServiceBus.Services.Netstd;
-using ServiceFabric.ServiceBus.Services.Netstd.CommunicationListeners;
-
 namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.MessageHandlers
 {
-    public class CrawlingQueueMessageHandler : DefaultServiceBusMessageReceiver
+    public class CrawlingQueueMessageHandler : IMessageHandler
     {
         private readonly IPageCrawler _pageCrawler;
         private readonly IPageIndexer _pageIndexer;
         private readonly ICrawlingAgentHost _crawlingAgentHost;
-        public CrawlingQueueMessageHandler(
-            IServiceBusCommunicationListener communicationListener, IPageIndexer pageIndexer, IPageCrawler pageCrawler, ICrawlingAgentHost crawlingAgentHost) : base(communicationListener)
+        public CrawlingQueueMessageHandler(IPageIndexer pageIndexer, IPageCrawler pageCrawler, ICrawlingAgentHost crawlingAgentHost)
         {
             _pageIndexer = pageIndexer;
             _pageCrawler = pageCrawler;
             _crawlingAgentHost = crawlingAgentHost;
         }
 
-        protected override async Task ReceiveMessageImplAsync(Message message, CancellationToken cancellationToken)
+        public async Task ReceiveMessageAsync(Message message, CancellationToken cancellationToken)
         {
             var pageToQueueMessage = message.GetDeserializedMessage<AddNewURLToCrawlingAgentMessage>();
 

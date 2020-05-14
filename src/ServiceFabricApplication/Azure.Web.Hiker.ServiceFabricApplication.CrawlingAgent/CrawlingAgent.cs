@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Fabric;
 
+using Azure.Web.Hiker.Infrastructure.ServiceFabric;
+
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 
@@ -11,10 +13,11 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
     /// </summary>
     internal sealed class CrawlingAgent : StatelessService
     {
-        public CrawlingAgent(StatelessServiceContext context)
+        private readonly IEnumerable<IAzureServiceBusCommunicationListener> _azureServiceBusCommunicationListener;
+        public CrawlingAgent(StatelessServiceContext context, IEnumerable<IAzureServiceBusCommunicationListener> azureServiceBusCommunicationListener)
             : base(context)
         {
-
+            _azureServiceBusCommunicationListener = azureServiceBusCommunicationListener;
         }
 
         /// <summary>
@@ -23,10 +26,15 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            return new ServiceInstanceListener[]
+            List<ServiceInstanceListener> listeners = new List<ServiceInstanceListener>();
+            int i = 1;
+            foreach (var listener in _azureServiceBusCommunicationListener)
             {
-                new ServiceInstanceListener(context => Program.ApplicationContainer.GetInstance<CrawlingQueueCommunicationListener>())
-            };
+                var name = $"listener{i}";
+                listeners.Add(new ServiceInstanceListener((context => listener), name));
+                i++;
+            }
+            return listeners;
         }
     }
 }

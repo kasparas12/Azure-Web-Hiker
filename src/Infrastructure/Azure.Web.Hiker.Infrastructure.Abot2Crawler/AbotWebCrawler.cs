@@ -8,8 +8,10 @@ using Abot2.Poco;
 
 using Azure.Web.Hiker.Core.AgentRegistrar.Persistence;
 using Azure.Web.Hiker.Core.Common.Metrics;
+using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer;
+using Azure.Web.Hiker.Core.RenderingAgent.Messages;
 using Azure.Web.Hiker.Infrastructure.Abot2Crawler.Models;
 
 namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler
@@ -19,22 +21,34 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler
         private readonly IHttpVisitMetricTracker _httpVisitMetricTracker;
         private readonly IPageIndexer _pageIndexer;
         private readonly IAgentRegistrarRepository _repository;
+        private readonly IPolitenessDeterminer _politenesDeterminer;
+        private readonly IRenderQueueClient _renderQueueClient;
 
-        public AbotWebCrawler(IHttpVisitMetricTracker httpVisitMetricTracker, IPageIndexer pageIndexer, IAgentRegistrarRepository repository)
+        public AbotWebCrawler(IHttpVisitMetricTracker httpVisitMetricTracker, IPageIndexer pageIndexer, IAgentRegistrarRepository repository, IPolitenessDeterminer politenessDeterminer, IRenderQueueClient renderQueueClient)
         {
             _httpVisitMetricTracker = httpVisitMetricTracker;
             _pageIndexer = pageIndexer;
             _repository = repository;
+            _politenesDeterminer = politenessDeterminer;
+            _renderQueueClient = renderQueueClient;
         }
 
         public async Task CrawlGivenWebPageAsync(string pageUrl)
         {
+            var crawlDelay = await _politenesDeterminer.CalculateHostCrawlDelayAsync(new Uri(pageUrl));
+            if (crawlDelay == -1)
+            {
+                var crawlResultItem = new AbotCrawlResult("CalculateDelayProhibited");
+                await _pageIndexer.MarkPageAsVisitedAsync(pageUrl, crawlResultItem);
+                return;
+            }
+
             var config = new CrawlConfiguration
             {
                 CrawlTimeoutSeconds = 100,
                 HttpRequestTimeoutInSeconds = 100,
-                MaxPagesToCrawl = 100,
-                MinCrawlDelayPerDomainMilliSeconds = 1500 //Wait this many millisecs between requests
+                MaxPagesToCrawl = 20,
+                MinCrawlDelayPerDomainMilliSeconds = Convert.ToInt32(Math.Round(crawlDelay * 1000))
             };
             var crawler = new PoliteWebCrawler(config);
 
@@ -79,6 +93,8 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler
 
             _httpVisitMetricTracker.TrackPageVisit(e.CrawledPage.Uri, e.CrawledPage.RequestCompleted);
             _repository.UpdateAgentActivityTime(e.CrawledPage.Uri.Host, DateTime.UtcNow);
+
+            await _renderQueueClient.SendMessageToRenderingQueue(new RenderingQueueMessage(e.CrawledPage.Uri.AbsoluteUri));
         }
 
         private async void crawler_PageLinksCrawlDisallowed(object sender, PageLinksCrawlDisallowedArgs e)

@@ -15,5 +15,7 @@ namespace Azure.Web.Hiker.Core.AgentRegistrar.Persistence
         int GetNumberOfActiveAgents();
         IEnumerable<(string, string)> GetHostsForWhichAgentsAreFree(DateTime timeoutDate);
         void UpdateAgentActivityTime(string hostName, DateTime lastActivity);
+        double? GetPrecalculatedCrawlDelay(string hostName);
+        void InsertCalculatedCrawlDelay(string hostName, double crawlDelay);
     }
 }

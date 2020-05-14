@@ -4,6 +4,12 @@
   <Section Name="GeneralApplicationConfigSection">
     <Parameter Name="MaxAgentsValue" Value="" />
     <Parameter Name="AgentInactivityTimeoutValue" Value="" />
+
+    <Parameter Name="DomainAuthorityDeterminerAPIURL" Value="" />
+    <Parameter Name="DomainAuthorityDeterminerAPIKey" Value="" />
+    <Parameter Name="MinCrawlDelay" Value="" />
+    <Parameter Name="MaxCrawlDelay" Value="" />
+    <Parameter Name="CrawlerUserAgent" Value="" />
   </Section>
   
   <Section Name="AssignedByCrawlingEngineConfigSection">
@@ -20,10 +26,13 @@
     <Parameter Name="AgentCreateQueue" Value="" />
     <Parameter Name="ServiceBusConnectionString" Value="" />
     <Parameter Name="CWCEControlQueue" Value="" />
-
+    <Parameter Name="RenderingServiceBusConnectionString" Value="" />
+    <Parameter Name="RenderQueue" Value=""/>
+    
     <Parameter Name="TenantId" Value="" />
     <Parameter Name="ClientId" Value="" />
     <Parameter Name="ClientSecret" Value="" />
+    <Parameter Name="RenderingNamespaceName" Value="" />
     <Parameter Name="NamespaceName" Value="" />
     <Parameter Name="ResourceGroupName" Value="" />
     <Parameter Name="SubscriptionId" Value="" />

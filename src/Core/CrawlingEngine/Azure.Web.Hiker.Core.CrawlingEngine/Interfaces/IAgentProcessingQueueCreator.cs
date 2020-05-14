@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Azure.Web.Hiker.Core.AgentRegistrar
+namespace Azure.Web.Hiker.Core.CrawlingEngine.Interfaces
 {
     public interface IAgentProcessingQueueCreator
     {
