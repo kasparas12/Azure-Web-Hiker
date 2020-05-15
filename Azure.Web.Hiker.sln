@@ -71,8 +71,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastruct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker", "src\Infrastructure\Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker\Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker.csproj", "{DE36D120-08B3-436F-9D81-2A28F34B6D9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderingAgent", "RenderingAgent", "{25A6BBCF-7179-4902-ACC6-75A9B5D5B69E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Core.RenderingAgent", "src\Core\RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent.csproj", "{0C22DC77-CF17-4665-8883-D4992931FF45}"
@@ -227,14 +225,6 @@ Global
 		{DE36D120-08B3-436F-9D81-2A28F34B6D9C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DE36D120-08B3-436F-9D81-2A28F34B6D9C}.Release|x64.ActiveCfg = Release|Any CPU
 		{DE36D120-08B3-436F-9D81-2A28F34B6D9C}.Release|x64.Build.0 = Release|Any CPU
-		{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}.Debug|x64.Build.0 = Debug|Any CPU
-		{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}.Release|x64.ActiveCfg = Release|Any CPU
-		{6CF8114A-D1A6-4EC1-B923-9D32D7CA9734}.Release|x64.Build.0 = Release|Any CPU
 		{0C22DC77-CF17-4665-8883-D4992931FF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0C22DC77-CF17-4665-8883-D4992931FF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C22DC77-CF17-4665-8883-D4992931FF45}.Debug|x64.ActiveCfg = Debug|Any CPU
