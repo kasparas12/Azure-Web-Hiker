@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
 
+using Azure.Web.Hiker.Core.RenderingAgent;
+
 namespace Azure.Web.Hiker.Core.IndexStorage.Models
 {
     public interface IPageIndex
@@ -11,6 +13,7 @@ namespace Azure.Web.Hiker.Core.IndexStorage.Models
         public DateTime? VisitedTimestamp { get; set; }
         public int? StatusCode { get; set; }
         public string DisallowedCrawlReason { get; set; }
+        public RenderStatus? RenderStatus { get; set; }
 
         public string CreateMD5HashOfUrl()
         {
@@ -33,7 +36,7 @@ namespace Azure.Web.Hiker.Core.IndexStorage.Models
 
     public class PageIndex : IPageIndex
     {
-        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt = null, int? statusCode = null, string disallowedReason = null)
+        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt = null, int? statusCode = null, string disallowedReason = null, RenderStatus? status = null)
         {
             PageUrl = url;
             HitCount = hitcount;
@@ -41,6 +44,7 @@ namespace Azure.Web.Hiker.Core.IndexStorage.Models
             VisitedTimestamp = visitedAt;
             StatusCode = statusCode;
             DisallowedCrawlReason = disallowedReason;
+            RenderStatus = status;
         }
 
         public string PageUrl { get; set; }
@@ -49,5 +53,7 @@ namespace Azure.Web.Hiker.Core.IndexStorage.Models
         public DateTime? VisitedTimestamp { get; set; }
         public int? StatusCode { get; set; }
         public string DisallowedCrawlReason { get; set; }
+        public RenderStatus? RenderStatus { get; set; }
+
     }
 }

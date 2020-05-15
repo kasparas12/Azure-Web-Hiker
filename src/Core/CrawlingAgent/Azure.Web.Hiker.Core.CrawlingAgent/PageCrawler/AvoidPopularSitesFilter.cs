@@ -7,7 +7,7 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler
 {
     public class AvoidPopularSitesFilter : IPageLinksFilter
     {
-        private readonly string[] PopularSites = { "facebook", "youtube", "google", "goo.gl", "twitter", "instagram" };
+        private readonly string[] PopularSites = { "facebook", "youtube", "google", "goo.gl", "twitter", "instagram", "delfi", "lrytas", "lrt", "15min" };
         public IEnumerable<Uri> FilterLinks(IEnumerable<Uri> urls)
         {
             var filteredList = new List<Uri>();

@@ -29,6 +29,9 @@
     <None Include="Scripts\Deploy-FabricApplication.ps1" />
   </ItemGroup>
   <ItemGroup>
+        <ChromiumFiles Include="..\RenderAgent\PackageRoot\Data\.local-chromium\**\*.*"/>
+    </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Azure.Web.Hiker.CrawlingEngine\Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.csproj" />
     <ProjectReference Include="..\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.csproj" />
     <ProjectReference Include="..\RenderAgent\RenderAgent.csproj" />
@@ -42,9 +45,13 @@
   </PropertyGroup>
   <Import Project="$(ApplicationProjectTargetsPath)" Condition="Exists('$(ApplicationProjectTargetsPath)')" />
   <Target Name="CreatePackage" Condition="'$(CreatePackage)' == 'true'" DependsOnTargets="Package" />
+  <Target Name="CopyExtraPackageFile" AfterTargets="Package">
+    <Copy SourceFiles="@(ChromiumFiles)" DestinationFolder="$(PackageLocation)\RenderAgentPkg\Data\.local-chromium\Win64-706915\chrome-win" />
+  </Target>
   <Import Project="..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.targets" Condition="Exists('..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.targets')" />
   <Target Name="ValidateMSBuildFiles" BeforeTargets="PrepareForBuild">
     <Error Condition="!Exists('..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.props')" Text="Unable to find the '..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.props' file. Please restore the 'Microsoft.VisualStudio.Azure.Fabric.MSBuild' Nuget package." />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.targets')" Text="Unable to find the '..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.targets' file. Please restore the 'Microsoft.VisualStudio.Azure.Fabric.MSBuild' Nuget package." />
   </Target>
+
 </Project>

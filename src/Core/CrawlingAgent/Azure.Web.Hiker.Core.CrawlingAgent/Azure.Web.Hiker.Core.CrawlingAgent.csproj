@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AhoCorasick" Version="2.0.46" />
+    <PackageReference Include="AngleSharp" Version="0.14.0" />
     <PackageReference Include="TurnerSoftware.RobotsExclusionTools" Version="0.3.0" />
   </ItemGroup>
 
@@ -12,6 +14,7 @@
     <ProjectReference Include="..\..\AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar.csproj" />
     <ProjectReference Include="..\..\Common\Azure.Web.Hiker.Core.Common\Azure.Web.Hiker.Core.Common.csproj" />
     <ProjectReference Include="..\..\IndexStorage\Azure.Web.Hiker.Core.IndexStorage\Azure.Web.Hiker.Core.CrawlingAgent.IndexStorage.csproj" />
+    <ProjectReference Include="..\..\RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent.csproj" />
   </ItemGroup>
 
 </Project>

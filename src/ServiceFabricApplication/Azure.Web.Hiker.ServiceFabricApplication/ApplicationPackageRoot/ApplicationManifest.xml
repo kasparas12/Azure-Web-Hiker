@@ -68,6 +68,9 @@
           <Section Name="StorageAccountConfigSection">
             <Parameter Name="StorageConnectionString" Value="[StorageConnectionString]" />
           </Section>
+          <Section Name="ApplicationInsightsConfigSection">
+            <Parameter Name="InstrumentationKey" Value="[InstrumentationKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>

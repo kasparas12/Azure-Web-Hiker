@@ -8,7 +8,8 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceFabric
 {
     public class GeneralApplicationSettings : IGeneralApplicationSettings
     {
-        public GeneralApplicationSettings(StatelessServiceContext context)
+        public GeneralApplicationSettings(StatelessServiceContext
+            context)
         {
             context.CodePackageActivationContext.ConfigurationPackageModifiedEvent += CodePackageActivationContext_ConfigurationPackageModifiedEvent;
             UpdateConfigSettings(context.CodePackageActivationContext.GetConfigurationPackageObject("Config").Settings);

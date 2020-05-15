@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\Common\Azure.Web.Hiker.Core.Common\Azure.Web.Hiker.Core.Common.csproj" />
+    <ProjectReference Include="..\..\..\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj" />
     <ProjectReference Include="..\..\..\Core\IndexStorage\Azure.Web.Hiker.Core.IndexStorage\Azure.Web.Hiker.Core.CrawlingAgent.IndexStorage.csproj" />
   </ItemGroup>
 

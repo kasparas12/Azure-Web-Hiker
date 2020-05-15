@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
+using Azure.Web.Hiker.Core.CrawlingAgent.Models;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 using Azure.Web.Hiker.Infrastructure.ServiceFabric;
 
@@ -12,21 +13,21 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent
     {
         private readonly IServiceBusSettings _serviceBusSettings;
         private readonly IMessageHandler _crawlingQueueMessageHandler;
-        private readonly string _crawlerHost;
+        private readonly ICrawlingAgentHost _crawlingAgentHost;
 
         private QueueClient _queueClient;
 
-        public CrawlingQueueCommunicationListener(IServiceBusSettings serviceBusSettings, IMessageHandler crawlingQueueMessageHandler, string crawlerHost)
+        public CrawlingQueueCommunicationListener(IServiceBusSettings serviceBusSettings, IMessageHandler crawlingQueueMessageHandler, ICrawlingAgentHost crawlingAgentHost)
         {
             _serviceBusSettings = serviceBusSettings;
             _crawlingQueueMessageHandler = crawlingQueueMessageHandler;
-            _crawlerHost = crawlerHost;
+            _crawlingAgentHost = crawlingAgentHost;
         }
 
         public Task<string> OpenAsync(CancellationToken cancellationToken)
         {
             var sbConnectionString = _serviceBusSettings.ServiceBusConnectionString;
-            var queueName = _crawlerHost;
+            var queueName = _crawlingAgentHost.AssignedHostName;
 
             _queueClient = new QueueClient(sbConnectionString, queueName);
             _queueClient.RegisterMessageHandler(_crawlingQueueMessageHandler.ReceiveMessageAsync,

@@ -11,6 +11,7 @@ using Azure.Web.Hiker.Core.Common.Metrics;
 using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer;
+using Azure.Web.Hiker.Core.CrawlingAgent.RenderingDecisionMaker;
 using Azure.Web.Hiker.Core.RenderingAgent.Messages;
 using Azure.Web.Hiker.Infrastructure.Abot2Crawler.Models;
 
@@ -23,14 +24,16 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler
         private readonly IAgentRegistrarRepository _repository;
         private readonly IPolitenessDeterminer _politenesDeterminer;
         private readonly IRenderQueueClient _renderQueueClient;
+        private readonly IRenderDecisionMaker _renderDecisionMaker;
 
-        public AbotWebCrawler(IHttpVisitMetricTracker httpVisitMetricTracker, IPageIndexer pageIndexer, IAgentRegistrarRepository repository, IPolitenessDeterminer politenessDeterminer, IRenderQueueClient renderQueueClient)
+        public AbotWebCrawler(IHttpVisitMetricTracker httpVisitMetricTracker, IPageIndexer pageIndexer, IAgentRegistrarRepository repository, IPolitenessDeterminer politenessDeterminer, IRenderQueueClient renderQueueClient, IRenderDecisionMaker renderDecisionMaker)
         {
             _httpVisitMetricTracker = httpVisitMetricTracker;
             _pageIndexer = pageIndexer;
             _repository = repository;
             _politenesDeterminer = politenessDeterminer;
             _renderQueueClient = renderQueueClient;
+            _renderDecisionMaker = renderDecisionMaker;
         }
 
         public async Task CrawlGivenWebPageAsync(string pageUrl)
@@ -94,7 +97,12 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler
             _httpVisitMetricTracker.TrackPageVisit(e.CrawledPage.Uri, e.CrawledPage.RequestCompleted);
             _repository.UpdateAgentActivityTime(e.CrawledPage.Uri.Host, DateTime.UtcNow);
 
-            await _renderQueueClient.SendMessageToRenderingQueue(new RenderingQueueMessage(e.CrawledPage.Uri.AbsoluteUri));
+            bool shouldRender = await _renderDecisionMaker.ShouldWebPageBeRenderedWithBrowser(e.CrawledPage.Uri, e.CrawledPage.Content.Text);
+
+            if (shouldRender)
+            {
+                await _renderQueueClient.SendMessageToRenderingQueue(new RenderingQueueMessage(e.CrawledPage.Uri.AbsoluteUri));
+            }
         }
 
         private async void crawler_PageLinksCrawlDisallowed(object sender, PageLinksCrawlDisallowedArgs e)

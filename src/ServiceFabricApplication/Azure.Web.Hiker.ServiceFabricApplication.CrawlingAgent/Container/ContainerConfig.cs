@@ -10,10 +10,12 @@ using Azure.Web.Hiker.Core.Common.Settings;
 using Azure.Web.Hiker.Core.CrawlingAgent.Models;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer;
+using Azure.Web.Hiker.Core.CrawlingAgent.RenderingDecisionMaker;
 using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
 using Azure.Web.Hiker.Core.DnsResolver.Interfaces;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.DNSResolver.UbietyResolver;
+using Azure.Web.Hiker.Infrastructure.Abot2Crawler;
 using Azure.Web.Hiker.Infrastructure.ApplicationInsightsTracker;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config;
@@ -35,6 +37,8 @@ using Newtonsoft.Json;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 
+using static Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config.PageIndexCloudTable;
+
 namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
 {
     public static class ContainerConfig
@@ -43,6 +47,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
         {
             var container = SetInitialContainerSettings(context);
 
+            ConfigureCrawlingHostData(context, container);
             ConfigureRepositories(container, context);
             ConfigureServiceFabricClient(container);
             ConfigureSettings(container, context);
@@ -51,10 +56,9 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             ConfigureServiceBusQueueClients(container, context);
             ConfigurePolitinessCalculator(container, context);
             ConfigureQueueCreators(container, context);
-            ConfigureCrawlingAgentListeningHandlersAndCommunicationListeners(container, context);
-            ConfigureCrawlingHostData(context, container);
             ConfigureApplicationInsightsTracker(container, context);
-
+            ConfigureRenderingDecisionMaker(container, context);
+            ConfigureCrawlingAgentListeningHandlersAndCommunicationListeners(container, context);
             return container;
         }
 
@@ -82,11 +86,14 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
 
             // Registering SQL database repositories
             container.Register<IAgentRegistrarRepository>(() => new DapperAgentRegistrarRepository(connectionString));
+            container.Register<ISearchStringRepository>(() => new DapperSearchStringRepository(connectionString), Lifestyle.Singleton);
             container.Register<ISettingsRepository>(() => new DapperSettingsRepository(connectionString));
 
             // Registering NoSQL Table Storage database repositories
             var cloudTable = PageIndexCloudTable.SetupPageIndexCloudTable(storageAccountConnectionString).GetAwaiter().GetResult();
+            var scriptCloudTable = ScriptStorageCloudTable.SetupPageIndexCloudTable(storageAccountConnectionString).GetAwaiter().GetResult();
             container.Register<IPageIndexStorageRepository>(() => new PageIndexStorageRepository(cloudTable), Lifestyle.Transient);
+            container.Register<IScriptRepository>(() => new ScriptStorageRepository(scriptCloudTable), Lifestyle.Transient);
         }
 
         private static void ConfigureServiceFabricClient(SimpleInjector.Container container)
@@ -102,7 +109,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
 
         private static void ConfigureCrawlingURLFilters(SimpleInjector.Container container)
         {
-            container.Collection.Register<IPageLinksFilter>(typeof(AvoidPopularSitesFilter));
+            container.Collection.Register<IPageLinksFilter>(typeof(AvoidPopularSitesFilter), typeof(LeaveLTDomainsFilter));
         }
 
         private static void ConfigureCoreServices(SimpleInjector.Container container)
@@ -111,6 +118,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             container.Register<IPageIndexer, PageIndexer>();
             container.Register<IAgentRegistrarService, AgentRegistrarService>();
             container.Register<ISettingsService, SettingsService>();
+            container.Register<IPageCrawler, AbotWebCrawler>();
 
             ConfigureDnsResolver(container);
         }
@@ -127,8 +135,8 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
                 new ManagementClient(serviceBusConnectionString)), Lifestyle.Singleton);
 
             container.Register<IRenderQueueClient>(() => new ServiceBusQueueClient(container.GetInstance<IServiceBusSettings>(),
-                new ServiceBusConnection(serviceBusConnectionString),
-                new ManagementClient(serviceBusConnectionString)), Lifestyle.Singleton);
+                new ServiceBusConnection(renderingServiceBusConnectionString),
+                new ManagementClient(renderingServiceBusConnectionString)), Lifestyle.Singleton);
 
         }
 
@@ -139,7 +147,7 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             var assignedHostName = JsonConvert.DeserializeObject<CrawlerAgentInitializationData>(Encoding.UTF8.GetString(context.InitializationData));
 
             container.Register<IMessageHandler, CrawlingQueueMessageHandler>();
-            container.Collection.Register<IAzureServiceBusCommunicationListener>(new CrawlingQueueCommunicationListener[] { new CrawlingQueueCommunicationListener(container.GetInstance<IServiceBusSettings>(), container.GetInstance<IMessageHandler>(), assignedHostName.AssignedHostName) });
+            container.Collection.Register<IAzureServiceBusCommunicationListener>(typeof(CrawlingQueueCommunicationListener));
         }
 
         private static void ConfigureQueueCreators(SimpleInjector.Container container, StatelessServiceContext context)
@@ -176,7 +184,18 @@ namespace Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.Container
             string instrumentationKey = configurationPackage.Settings.Sections["ApplicationInsightsConfigSection"].Parameters["InstrumentationKey"].Value;
 
             var telemetryClient = new TelemetryClient(new TelemetryConfiguration(instrumentationKey));
-            container.Register<IHttpVisitMetricTracker>(() => new ApplicationInsightsMetricTracker(telemetryClient));
+            container.Register<IHttpVisitMetricTracker>(() => new ApplicationInsightsMetricTracker(telemetryClient), Lifestyle.Singleton);
+        }
+
+        private static void ConfigureRenderingDecisionMaker(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            string instrumentationKey = configurationPackage.Settings.Sections["ApplicationInsightsConfigSection"].Parameters["InstrumentationKey"].Value;
+
+            container.Register<IHtmlScriptsParser, AngleSharpHtmlParser>();
+            container.Register<ICheckSumCalculator, MD5ChecksumCalculator>();
+            container.Register<IStringSearcher, StringSearcher>(Lifestyle.Singleton);
+            container.Register<IRenderDecisionMaker, RenderDecisionMaker>();
         }
     }
 }

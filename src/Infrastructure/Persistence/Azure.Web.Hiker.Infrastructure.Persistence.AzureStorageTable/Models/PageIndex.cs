@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Azure.Web.Hiker.Core.IndexStorage.Models;
+using Azure.Web.Hiker.Core.RenderingAgent;
 
 using Microsoft.Azure.Cosmos.Table;
 
@@ -24,10 +25,11 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Models
             VisitedTimestamp = visitedAt;
         }
 
-        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt, int? statusCode, string disallowedReason) : this(url, hitcount, visited, visitedAt)
+        public PageIndex(string url, int hitcount, bool visited, DateTime? visitedAt, int? statusCode, string disallowedReason, RenderStatus? status) : this(url, hitcount, visited, visitedAt)
         {
             StatusCode = statusCode;
             DisallowedCrawlReason = disallowedReason;
+            RenderStatus = status;
         }
         public string PageUrl { get; set; }
         public int HitCount { get; set; }
@@ -35,5 +37,6 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Models
         public DateTime? VisitedTimestamp { get; set; }
         public int? StatusCode { get; set; }
         public string DisallowedCrawlReason { get; set; }
+        public RenderStatus? RenderStatus { get; set; }
     }
 }

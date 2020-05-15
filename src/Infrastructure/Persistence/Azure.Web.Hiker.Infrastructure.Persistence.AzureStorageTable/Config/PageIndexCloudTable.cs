@@ -36,5 +36,38 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config
 
             return table;
         }
+
+        public static class ScriptStorageCloudTable
+        {
+            private const string TableName = "ScriptStorage";
+
+            public static async Task<CloudTable> SetupPageIndexCloudTable(string connectionString)
+            {
+                CloudStorageAccount storageAccount;
+
+                try
+                {
+                    storageAccount = CloudStorageAccount.Parse(connectionString);
+                }
+
+                catch (FormatException)
+                {
+                    throw;
+                }
+                catch (ArgumentException)
+                {
+                    throw;
+                }
+
+                var tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
+
+                // Create a table client for interacting with the table service 
+                CloudTable table = tableClient.GetTableReference(TableName);
+
+                await table.CreateIfNotExistsAsync();
+
+                return table;
+            }
+        }
     }
 }

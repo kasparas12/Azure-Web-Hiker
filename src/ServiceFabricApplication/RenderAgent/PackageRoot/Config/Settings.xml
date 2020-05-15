@@ -34,4 +34,7 @@
   <Section Name="StorageAccountConfigSection">
     <Parameter Name="StorageConnectionString" Value="" />
   </Section>
+  <Section Name="ApplicationInsightsConfigSection">
+    <Parameter Name="InstrumentationKey" Value="" />
+  </Section>
 </Settings>

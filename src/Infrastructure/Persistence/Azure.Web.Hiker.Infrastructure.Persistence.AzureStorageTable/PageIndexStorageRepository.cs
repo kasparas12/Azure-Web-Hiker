@@ -61,7 +61,7 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable
                 throw new ArgumentNullException("entity cannot be null");
             }
 
-            var index = new PageIndex(entity.PageUrl, entity.HitCount, entity.Visited, entity.VisitedTimestamp, entity.StatusCode, entity.DisallowedCrawlReason);
+            var index = new PageIndex(entity.PageUrl, entity.HitCount, entity.Visited, entity.VisitedTimestamp, entity.StatusCode, entity.DisallowedCrawlReason, entity.RenderStatus);
             index.PartitionKey = entity.PageUrl.GetHostOfUrl();
             index.RowKey = entity.PageUrl.CalculateMD5HashOfUrl();
 

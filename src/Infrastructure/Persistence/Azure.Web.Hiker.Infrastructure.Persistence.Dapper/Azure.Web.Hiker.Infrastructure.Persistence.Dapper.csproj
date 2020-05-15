@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar.csproj" />
+    <ProjectReference Include="..\..\..\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj" />
     <ProjectReference Include="..\..\..\Core\CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine.csproj" />
   </ItemGroup>
 

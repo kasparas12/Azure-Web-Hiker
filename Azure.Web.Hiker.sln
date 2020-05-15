@@ -75,11 +75,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp2", "ConsoleApp2\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderingAgent", "RenderingAgent", "{25A6BBCF-7179-4902-ACC6-75A9B5D5B69E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Core.RenderingAgent", "src\Core\RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent.csproj", "{0C22DC77-CF17-4665-8883-D4992931FF45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Core.RenderingAgent", "src\Core\RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent.csproj", "{0C22DC77-CF17-4665-8883-D4992931FF45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Web.Hiker.Infrastructure.PuppeteerRenderer", "src\Infrastructure\PuppeteerRenderer\Azure.Web.Hiker.Infrastructure.PuppeteerRenderer\Azure.Web.Hiker.Infrastructure.PuppeteerRenderer.csproj", "{E849B474-C606-441A-BE08-0FFB30448DE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Web.Hiker.Infrastructure.PuppeteerRenderer", "src\Infrastructure\PuppeteerRenderer\Azure.Web.Hiker.Infrastructure.PuppeteerRenderer\Azure.Web.Hiker.Infrastructure.PuppeteerRenderer.csproj", "{E849B474-C606-441A-BE08-0FFB30448DE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderAgent", "src\ServiceFabricApplication\RenderAgent\RenderAgent.csproj", "{ED7F7CD2-1916-4BC5-B332-9FF2CAE4D723}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RenderAgent", "src\ServiceFabricApplication\RenderAgent\RenderAgent.csproj", "{ED7F7CD2-1916-4BC5-B332-9FF2CAE4D723}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

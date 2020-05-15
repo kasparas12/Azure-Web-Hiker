@@ -10,6 +10,7 @@ using Azure.Web.Hiker.Core.Common.QueueClient;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
 using Azure.Web.Hiker.Core.IndexStorage.Models;
+using Azure.Web.Hiker.Core.RenderingAgent;
 
 namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
 {
@@ -137,6 +138,24 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
             }
 
             return listOfFilteredUlrs;
+        }
+
+        public async Task<bool> IsPageRenderedAsync(string url)
+        {
+            var pageIndex = await _pageIndexStorageRepository.GetPageIndexByUrl(url);
+            return pageIndex != null && pageIndex.RenderStatus != null;
+        }
+
+        public async Task MarkPageAsRenderedAsync(string url, RenderStatus status)
+        {
+
+            var pageIndex = await _pageIndexStorageRepository.GetPageIndexByUrl(url);
+
+            if (!(pageIndex is null))
+            {
+                pageIndex.RenderStatus = status;
+                await _pageIndexStorageRepository.InsertOrMergeNewPageIndex(pageIndex);
+            }
         }
     }
 }

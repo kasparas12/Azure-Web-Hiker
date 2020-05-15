@@ -11,16 +11,7 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler
 
             foreach (var url in urls)
             {
-                var host = url.Host;
-                int index = host.LastIndexOf('.'), last = 3;
-                while (index > 0 && index >= last - 3)
-                {
-                    last = index;
-                    index = host.LastIndexOf('.', last - 1);
-                }
-                var domain = host.Substring(index + 1);
-
-                if (domain.ToLower() == "lt")
+                if (url.Host.Contains(".lt"))
                 {
                     filteredList.Add(url);
                 }

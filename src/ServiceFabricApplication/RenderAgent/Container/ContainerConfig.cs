@@ -9,9 +9,12 @@ using Azure.Web.Hiker.Core.CrawlingAgent.PageCrawler;
 using Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer;
 using Azure.Web.Hiker.Core.CrawlingEngine.Interfaces;
 using Azure.Web.Hiker.Core.IndexStorage.Interfaces;
+using Azure.Web.Hiker.Core.RenderingAgent;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable;
 using Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.Config;
+using Azure.Web.Hiker.Infrastructure.Persistence.Dapper;
 using Azure.Web.Hiker.Infrastructure.Persistence.Dapper.Dapper;
+using Azure.Web.Hiker.Infrastructure.PuppeteerRenderer;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient;
 using Azure.Web.Hiker.Infrastructure.ServiceBusClient.QueueCreators;
 using Azure.Web.Hiker.Infrastructure.ServiceFabric;
@@ -19,8 +22,12 @@ using Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.Services;
 
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Management;
+using Microsoft.Extensions.Logging;
 
 using RenderAgent.Handlers;
+
+using Serilog;
+using Serilog.Extensions.Logging;
 
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
@@ -37,12 +44,12 @@ namespace RenderAgent.Container
             ConfigureServiceFabricClient(container);
             ConfigureSettings(container, context);
             ConfigureCrawlingURLFilters(container);
-            ConfigureCoreServices(container);
+            ConfigureCoreServices(container, context);
             ConfigureServiceBusQueueClients(container, context);
             ConfigurePolitinessCalculator(container, context);
             ConfigureQueueCreators(container, context);
             ConfigureRenderingAgentListeningHandlersAndCommunicationListeners(container, context);
-
+            ConfigureApplicationInsightsLogger(container, context);
             return container;
         }
 
@@ -69,6 +76,7 @@ namespace RenderAgent.Container
             string storageAccountConnectionString = configurationPackage.Settings.Sections["StorageAccountConfigSection"].Parameters["StorageConnectionString"].Value;
 
             // Registering SQL database repositories
+            container.Register<IAgentRegistrarRepository>(() => new DapperAgentRegistrarRepository(connectionString));
             container.Register<IRenderingAgentRepository>(() => new DapperRenderingAgentRegistrarRepository(connectionString));
             container.Register<ISettingsRepository>(() => new DapperSettingsRepository(connectionString));
 
@@ -88,14 +96,28 @@ namespace RenderAgent.Container
             container.Register<IGeneralApplicationSettings>(() => new GeneralApplicationSettings(context));
         }
 
+        private static void ConfigureApplicationInsightsLogger(SimpleInjector.Container container, StatelessServiceContext context)
+        {
+            var configurationPackage = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            string instrumentationKey = configurationPackage.Settings.Sections["ApplicationInsightsConfigSection"].Parameters["InstrumentationKey"].Value;
+            var log = new LoggerConfiguration()
+                .WriteTo
+                .ApplicationInsights(instrumentationKey, TelemetryConverter.Traces)
+                .CreateLogger();
+
+            container.Register<ILoggerFactory>(() => new SerilogLoggerFactory(log));
+        }
+
         private static void ConfigureCrawlingURLFilters(SimpleInjector.Container container)
         {
             container.Collection.Register<IPageLinksFilter>(typeof(AvoidPopularSitesFilter));
         }
 
-        private static void ConfigureCoreServices(SimpleInjector.Container container)
+        private static void ConfigureCoreServices(SimpleInjector.Container container, StatelessServiceContext context)
         {
+            var chromiumPath = @$"{context.CodePackageActivationContext.GetDataPackageObject("Data").Path}\.local-chromium\Win64-706915\chrome-win\chrome.exe";
             container.Register<IAgentController, FabricAgentController>();
+            container.Register<IWebsiteRenderer>(() => new PuppeteerRenderer(chromiumPath, container.GetInstance<ILoggerFactory>()));
             container.Register<IPageIndexer, PageIndexer>();
             container.Register<IAgentRegistrarService, AgentRegistrarService>();
             container.Register<ISettingsService, SettingsService>();
