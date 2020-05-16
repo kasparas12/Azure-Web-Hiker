@@ -45,8 +45,14 @@ namespace Azure.Web.Hiker.Infrastructure.ServiceBusClient
                 EnablePartitioning = true
             };
 
-            await sbClient.Queues.CreateOrUpdateAsync(_settings.ResourceGroupName, namespaceName, agentHostName, queueParams);
-
+            try
+            {
+                await sbClient.Queues.CreateOrUpdateAsync(_settings.ResourceGroupName, namespaceName, agentHostName, queueParams);
+            }
+            catch (Exception e)
+            {
+                var a = e;
+            }
         }
 
         protected abstract string GetNamespaceName();

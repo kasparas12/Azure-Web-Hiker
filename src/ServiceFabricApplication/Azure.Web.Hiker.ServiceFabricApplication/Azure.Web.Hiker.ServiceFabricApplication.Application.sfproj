@@ -29,14 +29,90 @@
     <None Include="Scripts\Deploy-FabricApplication.ps1" />
   </ItemGroup>
   <ItemGroup>
-        <ChromiumFiles Include="..\RenderAgent\PackageRoot\Data\.local-chromium\**\*.*"/>
-    </ItemGroup>
+    <ChromiumFiles Include="..\RenderAgent\PackageRoot\Data\.local-chromium\**\*.*" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Azure.Web.Hiker.CrawlingEngine\Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.csproj" />
     <ProjectReference Include="..\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent\Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent.csproj" />
     <ProjectReference Include="..\RenderAgent\RenderAgent.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\85.0.4149.0.manifest" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\chrome.dll" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\chrome.exe" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\chrome_100_percent.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\chrome_200_percent.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\chrome_elf.dll" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\chrome_proxy.exe" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\chrome_pwa_launcher.exe" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\D3DCompiler_47.dll" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\elevation_service.exe" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\eventlog_provider.dll" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\First Run" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\icudtl.dat" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\interactive_ui_tests.exe" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\libEGL.dll" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\libGLESv2.dll" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ar.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\bg.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\bn.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ca.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\cs.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\da.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\de.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\el.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\en-GB.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\en-US.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\es-419.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\es.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\et.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\fi.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\fil.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\fr.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\gu.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\he.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\hi.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\hr.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\hu.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\id.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\it.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ja.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\kn.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ko.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\lt.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\lv.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ml.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\mr.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ms.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\nb.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\nl.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\pl.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\pt-BR.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\pt-PT.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ro.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ru.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\sk.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\sl.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\sr.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\sv.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\ta.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\te.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\th.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\tr.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\uk.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\vi.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\zh-CN.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\locales\zh-TW.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\MEIPreload\manifest.json" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\MEIPreload\preloaded_data.pb" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\nacl_irt_x86_64.nexe" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\notification_helper.exe" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\resources.pak" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\swiftshader\libEGL.dll" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\swiftshader\libGLESv2.dll" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\v8_context_snapshot.bin" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Config\Settings.xml" />
+    <Content Include="ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\ServiceManifest.xml" />
     <Content Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
@@ -53,5 +129,4 @@
     <Error Condition="!Exists('..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.props')" Text="Unable to find the '..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.props' file. Please restore the 'Microsoft.VisualStudio.Azure.Fabric.MSBuild' Nuget package." />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.targets')" Text="Unable to find the '..\..\..\packages\Microsoft.VisualStudio.Azure.Fabric.MSBuild.1.6.9\build\Microsoft.VisualStudio.Azure.Fabric.Application.targets' file. Please restore the 'Microsoft.VisualStudio.Azure.Fabric.MSBuild' Nuget package." />
   </Target>
-
 </Project>

@@ -80,7 +80,7 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
             }
         }
 
-        public async Task ProcessCrawledLinksAsync(IEnumerable<Uri> crawledLinks, string crawlerHost)
+        public async Task ProcessCrawledLinksAsync(IEnumerable<Uri> crawledLinks, string crawlerHost, double crawlDelay)
         {
             int index = 0;
 
@@ -112,7 +112,7 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
             var sameHostNonExistingLinks = nonExistingLinks.Where(x => x.GetHostOfUrl() == crawlerHost);
             var differentHostNonExistingLinks = nonExistingLinks.Except(sameHostNonExistingLinks);
 
-            await _webCrawlerQueueClient.SendMessagesToCrawlingAgentProcessingQueue(sameHostNonExistingLinks.Select(x => new AddNewURLToCrawlingAgentMessage(x)), crawlerHost);
+            await _webCrawlerQueueClient.SendMessagesToCrawlingAgentProcessingQueue(sameHostNonExistingLinks.Select(x => new AddNewURLToCrawlingAgentMessage(x, DateTime.UtcNow.AddSeconds(5 * (sameHostNonExistingLinks.ToList().IndexOf(x) + 1)))), crawlerHost);
 
             foreach (var link in differentHostNonExistingLinks)
             {

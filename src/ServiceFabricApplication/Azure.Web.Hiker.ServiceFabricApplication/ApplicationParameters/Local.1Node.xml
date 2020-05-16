@@ -4,30 +4,30 @@
     <Parameter Name="RenderAgent_InstanceCount" Value="1" />
     <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent_InstanceCount" Value="1" />
     <Parameter Name="Stateless1_InstanceCount" Value="1" />
-    <Parameter Name="AgentRegistrarDatabaseConnectionString" Value="" />
+    <Parameter Name="AgentRegistrarDatabaseConnectionString" Value="Server=tcp:azurewebhiker.database.windows.net,1433;Initial Catalog=webcrawler_db;Persist Security Info=False;User ID=kasparas12;Password=Kasparas11!@;MultipleActiveResultSets=False;Encrypt=True;Connection Timeout=30;" />
     <Parameter Name="DnsServerIpAddress" Value="8.8.8.8" />
     <Parameter Name="DnsRequestsRetryCount" Value="3" />
     <Parameter Name="DnsRequestTimeoutValue" Value="1000" />
-    <Parameter Name="ServiceBusConnectionString" Value="" />
+    <Parameter Name="ServiceBusConnectionString" Value="Endpoint=sb://azure-web-hiker-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=yRoInKeElg3het9kanWfsNWxFTR8n/w+kStleAV//w8=" />
     <Parameter Name="CWCEControlQueue" Value="cwce-control-queue" />
     <Parameter Name="AgentCreateQueue" Value="agent-create-queue" />
-    <Parameter Name="TenantId" Value="" />
-    <Parameter Name="ClientId" Value="" />
-    <Parameter Name="ClientSecret" Value="" />
-    <Parameter Name="NamespaceName" Value="" />
-    <Parameter Name="RenderingNamespaceName" Value="" />
-    <Parameter Name="ResourceGroupName" Value="" />
-    <Parameter Name="SubscriptionId" Value="" />
-    <Parameter Name="StorageConnectionString" Value="" />
-    <Parameter Name="MaxAgentsValue" Value="40" />
+    <Parameter Name="TenantId" Value="6ae75a93-eef2-444e-b05b-7369cc4f4561" />
+    <Parameter Name="ClientId" Value="f514c673-14f2-42fa-8ae2-e673260589b2" />
+    <Parameter Name="ClientSecret" Value="f0lw?C80cDv8l]uBA@hMosbGTTgGh[]=" />
+    <Parameter Name="NamespaceName" Value="azure-web-hiker-dev" />
+    <Parameter Name="RenderingNamespaceName" Value="azure-web-hiker-dev-rendering" />
+    <Parameter Name="ResourceGroupName" Value="WebCrawler-BachelorThesis" />
+    <Parameter Name="SubscriptionId" Value="26704db2-1b5b-4587-9ee9-130e0fb591b4" />
+    <Parameter Name="StorageConnectionString" Value="DefaultEndpointsProtocol=https;AccountName=azurewebhikerstorage;AccountKey=twtnxq+leLYt/oZGSbpGfzxt4xiRryL0pCGqocXNIGVzuKCkz1XdLJPukVPXKy5umwN7V3FCgbRmtgAzpk+t4Q==;EndpointSuffix=core.windows.net" />
+    <Parameter Name="MaxAgentsValue" Value="1" />
     <Parameter Name="AgentInactivityTimeoutValue" Value="2" />
-    <Parameter Name="InstrumentationKey" Value="" />
-    <Parameter Name="DomainAuthorityDeterminerAPIURL" Value="" />
-    <Parameter Name="DomainAuthorityDeterminerAPIKey" Value="" />
+    <Parameter Name="InstrumentationKey" Value="00b6b09a-a7cd-495d-a029-c8b667a23c12" />
+    <Parameter Name="DomainAuthorityDeterminerAPIURL" Value="https://api.openrank.io/" />
+    <Parameter Name="DomainAuthorityDeterminerAPIKey" Value="4MG4QjtljHvwki1uhV+wXfGoMsNAWqiofS7Ih4xc7OY" />
     <Parameter Name="MinCrawlDelay" Value="0.1" />
     <Parameter Name="MaxCrawlDelay" Value="120" />
     <Parameter Name="CrawlerUserAgent" Value="Azure Web Hiker" />
-    <Parameter Name="RenderingServiceBusConnectionString" Value="" />
+    <Parameter Name="RenderingServiceBusConnectionString" Value="Endpoint=sb://azure-web-hiker-dev-rendering.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tzOdX+OIiZpRAZWkhQvgVJxQ9pGl7AiA8+kt26j+JDE=" />
     <Parameter Name="RenderQueue" Value="rendering-queue" />
   </Parameters>
 </Application>

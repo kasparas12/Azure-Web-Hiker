@@ -25,6 +25,7 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler
         private readonly IPolitenessDeterminer _politenesDeterminer;
         private readonly IRenderQueueClient _renderQueueClient;
         private readonly IRenderDecisionMaker _renderDecisionMaker;
+        private double _crawlDelay;
 
         public AbotWebCrawler(IHttpVisitMetricTracker httpVisitMetricTracker, IPageIndexer pageIndexer, IAgentRegistrarRepository repository, IPolitenessDeterminer politenessDeterminer, IRenderQueueClient renderQueueClient, IRenderDecisionMaker renderDecisionMaker)
         {
@@ -36,21 +37,15 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler
             _renderDecisionMaker = renderDecisionMaker;
         }
 
-        public async Task CrawlGivenWebPageAsync(string pageUrl)
+        public async Task CrawlGivenWebPageAsync(string pageUrl, double crawlDelay)
         {
-            var crawlDelay = await _politenesDeterminer.CalculateHostCrawlDelayAsync(new Uri(pageUrl));
-            if (crawlDelay == -1)
-            {
-                var crawlResultItem = new AbotCrawlResult("CalculateDelayProhibited");
-                await _pageIndexer.MarkPageAsVisitedAsync(pageUrl, crawlResultItem);
-                return;
-            }
+            _crawlDelay = crawlDelay;
 
             var config = new CrawlConfiguration
             {
                 CrawlTimeoutSeconds = 100,
                 HttpRequestTimeoutInSeconds = 100,
-                MaxPagesToCrawl = 20,
+                MaxPagesToCrawl = 1,
                 MinCrawlDelayPerDomainMilliSeconds = Convert.ToInt32(Math.Round(crawlDelay * 1000))
             };
             var crawler = new PoliteWebCrawler(config);
@@ -89,7 +84,7 @@ namespace Azure.Web.Hiker.Infrastructure.Abot2Crawler
 
             if (links != null)
             {
-                await _pageIndexer.ProcessCrawledLinksAsync(links, e.CrawledPage.Uri.Host);
+                await _pageIndexer.ProcessCrawledLinksAsync(links, e.CrawledPage.Uri.Host, _crawlDelay);
             }
 
             await _pageIndexer.MarkPageAsVisitedAsync(e.CrawledPage.Uri.AbsoluteUri, crawlResult);

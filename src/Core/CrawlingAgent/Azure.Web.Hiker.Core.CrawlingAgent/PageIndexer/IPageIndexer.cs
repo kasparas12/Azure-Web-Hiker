@@ -16,6 +16,6 @@ namespace Azure.Web.Hiker.Core.CrawlingAgent.PageIndexer
         Task MarkPageAsVisitedAsync(string url, IPageCrawlResult crawlResult);
         Task MarkPageAsRenderedAsync(string url, RenderStatus status);
 
-        Task ProcessCrawledLinksAsync(IEnumerable<Uri> crawledLinks, string crawlerHost);
+        Task ProcessCrawledLinksAsync(IEnumerable<Uri> crawledLinks, string crawlerHost, double crawlDelay);
     }
 }

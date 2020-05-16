@@ -25,14 +25,13 @@ namespace Azure.Web.Hiker.Infrastructure.PuppeteerRenderer
 
         public async Task<RenderResult> RenderPageAsync(Uri webPage, int timeout)
         {
-            var browser = await Puppeteer.LaunchAsync(new LaunchOptions
-            {
-                Headless = true,
-                ExecutablePath = _chromiumPath // @$"{context.CodePackageActivationContext.GetDataPackageObject("Data").Path}\.local-chromium\Win64-706915\chrome-win\chrome.exe"
-            }, _loggerFactory).ConfigureAwait(false);
-
             try
             {
+                var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+                {
+                    BrowserURL = "http://localhost:9222"
+                }, _loggerFactory).ConfigureAwait(false);
+
                 using (var page = (await browser.NewPageAsync().ConfigureAwait(false)))
                 {
                     Response renderResponse;

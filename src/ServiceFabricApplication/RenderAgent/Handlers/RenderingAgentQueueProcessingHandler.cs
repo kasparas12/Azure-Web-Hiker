@@ -40,7 +40,7 @@ namespace RenderAgent.Handlers
 
             var result = await _websiteRenderer.RenderPageAsync(new Uri(renderMessage.UrlToRender), 100000).ConfigureAwait(false);
 
-            await _pageIndexer.ProcessCrawledLinksAsync(result.NewDiscoveredLinks, renderMessage.UrlToRender.GetHostOfUrl());
+            // await _pageIndexer.ProcessCrawledLinksAsync(result.NewDiscoveredLinks, renderMessage.UrlToRender.GetHostOfUrl());
 
             _renderingAgentRepository.UpdateAgentActivityTime(renderMessage.UrlToRender.GetHostOfUrl(), DateTime.UtcNow);
 

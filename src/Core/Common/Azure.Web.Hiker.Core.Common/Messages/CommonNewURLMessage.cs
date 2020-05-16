@@ -13,13 +13,17 @@ namespace Azure.Web.Hiker.Core.Common.Messages
 
         }
 
-        public CommonNewUrlMessage(string url)
+        public CommonNewUrlMessage(string url, DateTime? crawlingDateTime = null)
         {
             NewUrl = url;
+            CrawlingDateTime = crawlingDateTime;
         }
 
         [JsonProperty("newUrl")]
         public string NewUrl { get; set; }
+
+        [JsonProperty("crawlingDateTime")]
+        public DateTime? CrawlingDateTime { get; set; }
 
         public string GetHostOfPage()
         {

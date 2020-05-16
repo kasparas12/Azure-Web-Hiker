@@ -42,7 +42,7 @@ namespace Azure.Web.Hiker.Infrastructure.Persistence.Dapper.Dapper
 
         public IEnumerable<(string, string)> GetHostsForWhichAgentsAreFree(string tableName, DateTime timeoutDate)
         {
-            var sql = $"SELECT agent_host, agent_name FROM {tableName} WHERE is_deleted = 0 and last_activity < @TimeoutDate";
+            var sql = $"SELECT agent_host, agent_name FROM {tableName} WHERE is_deleted = 0 and (last_activity < @TimeoutDate or last_activity IS NULL)";
 
             using (var connection = new SqlConnection(_connectionString))
             {
