@@ -360,4 +360,25 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Chromium driver files
-src\ServiceFabricApplication\Azure.Web.Hiker.ServiceFabricApplication\ApplicationPackageRoot\Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriverPkg\Code\*
+interactive_ui_tests.exe
+chrome.dll
+icudtl.dat
+libGLESv2.dll
+resources.pak
+D3DCompiler_47.dll
+nacl_irt_x86_64.nexe
+chrome.exe
+chrome_200_percent.pak
+elevation_service.exe
+chrome_pwa_launcher.exe
+notification_helper.exe
+chrome_elf.dll
+chrome_100_percent.pak
+chrome_proxy.exe
+libEGL.dll
+v8_context_snapshot.bin
+eventlog_provider.dll
+85.0.4149.0.manifest
+First Run
+MEIPreload/
+swiftshader/
