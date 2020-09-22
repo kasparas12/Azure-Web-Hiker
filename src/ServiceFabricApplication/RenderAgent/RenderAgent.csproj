@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
+    <ServerGarbageCollection>True</ServerGarbageCollection>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Chromium\**" />
+    <EmbeddedResource Remove="Chromium\**" />
+    <None Remove="Chromium\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="4.1.409" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
+    <PackageReference Include="SimpleInjector" Version="4.10.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.Dapper\Azure.Web.Hiker.Infrastructure.Persistence.Dapper.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\PuppeteerRenderer\Azure.Web.Hiker.Infrastructure.PuppeteerRenderer\Azure.Web.Hiker.Infrastructure.PuppeteerRenderer.csproj" />
+    <ProjectReference Include="..\Azure.Web.Hiker.CrawlingEngine\Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine.csproj" />
+  </ItemGroup>
+
+</Project>

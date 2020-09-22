@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
+    <ServerGarbageCollection>True</ServerGarbageCollection>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
+    <AssemblyName>CrawlingEngine</AssemblyName>
+    <RootNamespace>Azure.Web.Hiker.ServiceFabricApplication.CrawlingEngine</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="4.1.3" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="4.1.409" />
+    <PackageReference Include="ServiceFabric.ServiceBus.Services.Netstd" Version="7.0.3" />
+    <PackageReference Include="SimpleInjector" Version="4.10.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar.csproj" />
+    <ProjectReference Include="..\..\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj" />
+    <ProjectReference Include="..\..\Core\CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine.csproj" />
+    <ProjectReference Include="..\..\Core\RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\AzureServiceBusCommunication\Azure.Web.Hiker.Infrastructure.ServiceBusClient\Azure.Web.Hiker.Infrastructure.ServiceBusClient.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable\Azure.Web.Hiker.Infrastructure.Persistence.AzureStorageTable.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Persistence\Azure.Web.Hiker.Infrastructure.Persistence.Dapper\Azure.Web.Hiker.Infrastructure.Persistence.Dapper.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ServiceFabric\Azure.Web.Hiker.Infrastructure.ServiceFabric\Azure.Web.Hiker.Infrastructure.ServiceFabric.csproj" />
+  </ItemGroup>
+
+</Project>

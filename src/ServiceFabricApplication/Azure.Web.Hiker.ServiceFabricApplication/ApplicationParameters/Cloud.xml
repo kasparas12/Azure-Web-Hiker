@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/Azure.Web.Hiker.ServiceFabricApplication" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.ChromiumDriver_InstanceCount" Value="-1" />
+    <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.BrowserDriver_InstanceCount" Value="-1" />
+    <Parameter Name="RenderAgent_InstanceCount" Value="-1" />
+    <Parameter Name="Azure.Web.Hiker.ServiceFabricApplication.CrawlingAgent_InstanceCount" Value="1" />
+    <Parameter Name="Stateless1_InstanceCount" Value="1" />
+    <Parameter Name="AgentRegistrarDatabaseConnectionString" Value="" />
+    <Parameter Name="DnsServerIpAddress" Value="8.8.8.8" />
+    <Parameter Name="DnsRequestsRetryCount" Value="3" />
+    <Parameter Name="DnsRequestTimeoutValue" Value="1000" />
+    <Parameter Name="ServiceBusConnectionString" Value="" />
+    <Parameter Name="CWCEControlQueue" Value="" />
+    <Parameter Name="AgentCreateQueue" Value="" />
+    <Parameter Name="TenantId" Value="" />
+    <Parameter Name="ClientId" Value="" />
+    <Parameter Name="ClientSecret" Value="" />
+    <Parameter Name="NamespaceName" Value="" />
+    <Parameter Name="ResourceGroupName" Value="" />
+    <Parameter Name="SubscriptionId" Value="" />
+    <Parameter Name="StorageConnectionString" Value="" />
+    <Parameter Name="MaxAgentsValue" Value="" />
+    <Parameter Name="AgentInactivityTimeoutValue" Value="" />
+    <Parameter Name="InstrumentationKey" Value="" />
+  </Parameters>
+</Application>

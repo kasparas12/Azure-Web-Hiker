@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Azure.Web.Hiker.Core.Common\Azure.Web.Hiker.Core.Common.csproj" />
+    <ProjectReference Include="..\..\CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine.csproj" />
+  </ItemGroup>
+
+</Project>

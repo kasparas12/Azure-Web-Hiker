@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Management.ServiceBus" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="4.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar\Azure.Web.Hiker.Core.AgentRegistrar.csproj" />
+    <ProjectReference Include="..\..\..\Core\Common\Azure.Web.Hiker.Core.Common\Azure.Web.Hiker.Core.Common.csproj" />
+    <ProjectReference Include="..\..\..\Core\CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine\Azure.Web.Hiker.Core.CrawlingEngine.csproj" />
+  </ItemGroup>
+
+</Project>

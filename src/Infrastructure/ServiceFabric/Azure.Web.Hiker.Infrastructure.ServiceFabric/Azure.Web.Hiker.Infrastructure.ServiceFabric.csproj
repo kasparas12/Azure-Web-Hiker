@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.14.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.ServiceFabric" Version="7.1.409" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="4.1.409" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AzureServiceBusCommunication\Azure.Web.Hiker.Infrastructure.ServiceBusClient\Azure.Web.Hiker.Infrastructure.ServiceBusClient.csproj" />
+  </ItemGroup>
+
+</Project>

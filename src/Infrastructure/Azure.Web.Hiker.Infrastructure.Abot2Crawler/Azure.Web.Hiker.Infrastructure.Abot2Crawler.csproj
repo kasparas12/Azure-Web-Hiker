@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Abot" Version="2.0.55" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent\Azure.Web.Hiker.Core.CrawlingAgent.csproj" />
+    <ProjectReference Include="..\..\Core\RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent\Azure.Web.Hiker.Core.RenderingAgent.csproj" />
+  </ItemGroup>
+
+</Project>

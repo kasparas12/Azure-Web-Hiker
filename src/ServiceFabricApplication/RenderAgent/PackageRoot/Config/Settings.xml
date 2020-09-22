@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Section Name="GeneralApplicationConfigSection">
+    <Parameter Name="MaxAgentsValue" Value="" />
+    <Parameter Name="AgentInactivityTimeoutValue" Value="" />
+
+    <Parameter Name="DomainAuthorityDeterminerAPIURL" Value="" />
+    <Parameter Name="DomainAuthorityDeterminerAPIKey" Value="" />
+    <Parameter Name="MinCrawlDelay" Value="" />
+    <Parameter Name="MaxCrawlDelay" Value="" />
+    <Parameter Name="CrawlerUserAgent" Value="" />
+  </Section>
+  <Section Name="ServiceBusConfigSection">
+
+    <Parameter Name="CWCEControlQueue" Value="" />
+    <Parameter Name="AgentCreateQueue" Value=""/>
+    <Parameter Name="RenderingServiceBusConnectionString" Value="" />
+    <Parameter Name="RenderQueue" Value=""/>
+
+    <Parameter Name="ServiceBusConnectionString" Value="" />
+
+    <Parameter Name="TenantId" Value="" />
+    <Parameter Name="ClientId" Value="" />
+    <Parameter Name="ClientSecret" Value="" />
+    <Parameter Name="NamespaceName" Value="" />
+    <Parameter Name="RenderingNamespaceName" Value="" />
+    <Parameter Name="ResourceGroupName" Value="" />
+    <Parameter Name="SubscriptionId" Value="" />
+
+  </Section>
+  <Section Name="AgentRegistrarDatabaseSection">
+    <Parameter Name="ConnectionString" Value="" />
+  </Section>
+  <Section Name="StorageAccountConfigSection">
+    <Parameter Name="StorageConnectionString" Value="" />
+  </Section>
+  <Section Name="ApplicationInsightsConfigSection">
+    <Parameter Name="InstrumentationKey" Value="" />
+  </Section>
+</Settings>
